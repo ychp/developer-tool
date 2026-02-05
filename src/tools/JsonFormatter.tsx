@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Code2, Copy, Check, FileText, Trash2 } from 'lucide-react'
+import { Code2, Copy, Check, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function JsonFormatter() {

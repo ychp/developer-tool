@@ -11,7 +11,6 @@ export function QrCodeGenerator() {
   const [fgColor, setFgColor] = useState('#000000')
   const [bgColor, setBgColor] = useState('#ffffff')
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M')
-  const [qrDataUrl, setQrDataUrl] = useState('')
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {

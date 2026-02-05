@@ -24,7 +24,7 @@ import {
   Globe
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const menuGroups = [
   {
@@ -96,12 +96,34 @@ const menuGroups = [
 
 export function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
-  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set())
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const location = useLocation()
+
+  const isToolActive = (path: string) => location.pathname === path
+  const isGroupActive = (group: typeof menuGroups[0]) => 
+    group.tools.some(tool => isToolActive(tool.path))
+
+  const [openGroups, setOpenGroups] = useState<Set<string>>(new Set())
+  const previousPathRef = useRef('/')
+
+  useEffect(() => {
+    const currentPath = location.pathname
+    const previousPath = previousPathRef.current
+
+    if (currentPath === '/' && previousPath !== '/') {
+      setOpenGroups(new Set())
+    } else if (currentPath !== '/' && previousPath === '/') {
+      const activeGroup = menuGroups.find(isGroupActive)
+      if (activeGroup) {
+        setOpenGroups(new Set([activeGroup.name]))
+      }
+    }
+
+    previousPathRef.current = currentPath
+  }, [location.pathname, isGroupActive])
 
   const closePopup = () => {
     if (closeTimeoutRef.current) {
@@ -120,18 +142,12 @@ export function Layout() {
   }
 
   const toggleGroup = (groupName: string) => {
-    const newOpenGroups = new Set(openGroups)
-    if (newOpenGroups.has(groupName)) {
-      newOpenGroups.delete(groupName)
+    if (openGroups.has(groupName)) {
+      setOpenGroups(new Set())
     } else {
-      newOpenGroups.add(groupName)
+      setOpenGroups(new Set([groupName]))
     }
-    setOpenGroups(newOpenGroups)
   }
-
-  const isToolActive = (path: string) => location.pathname === path
-  const isGroupActive = (group: typeof menuGroups[0]) => 
-    group.tools.some(tool => isToolActive(tool.path))
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
