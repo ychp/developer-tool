@@ -345,7 +345,7 @@ export function Layout() {
                 <div className="flex items-center justify-center gap-4 flex-wrap">
                   <span>© 2024 Create By 云止.</span>
                   <a 
-                    href="https://github.com" 
+                    href="https://github.com/ychp/developer-tool"
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
