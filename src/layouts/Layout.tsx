@@ -152,32 +152,29 @@ export function Layout() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-background">
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-5 flex flex-wrap items-center justify-center gap-16 p-8 select-none" style={{
-        backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 100px, rgba(0,0,0,.03) 100px, rgba(0,0,0,.03) 200px), repeating-linear-gradient(-45deg, transparent, transparent 100px, rgba(0,0,0,.03) 100px, rgba(0,0,0,.03) 200px)',
-        fontSize: '24px',
-        fontWeight: 'bold',
-        color: '#374151',
-        fontFamily: 'monospace',
-      }}>
-        {Array.from({ length: 100 }).map((_, i) => (
-          <span key={i} className="transform -rotate-45">Yun Zhi</span>
-        ))}
-      </div>
-      
-      <header className="flex-shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-4">
+    <div className="h-screen flex flex-col overflow-hidden relative z-10">
+      <header className="flex-shrink-0 border-b bg-gradient-to-r from-sky-50 via-cyan-50 to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative overflow-hidden">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative flex h-16 items-center px-4 lg:px-6">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden mr-2"
+            className="lg:hidden mr-2 hover:bg-blue-100 dark:hover:bg-gray-800"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <Menu className="h-5 w-5" />
           </Button>
-          <Link to="/" className="flex items-center space-x-2">
-            <Code2 className="h-6 w-6" />
-            <span className="font-bold">在线工具箱</span>
+          <Link to="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+              <div className="relative bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg p-2">
+                <Code2 className="h-6 w-6 text-white" />
+              </div>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-lg bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">在线工具箱</span>
+              <span className="text-xs text-muted-foreground hidden sm:block">18+ 免费实用工具</span>
+            </div>
           </Link>
         </div>
       </header>
@@ -188,20 +185,22 @@ export function Layout() {
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } ${sidebarCollapsed ? 'w-16' : 'w-64'} lg:translate-x-0`}
         >
-          <nav className="flex-1 space-y-1 p-4">
+          <nav className="flex-1 space-y-2 p-3">
             <Link
               to="/"
-              className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors mb-4 ${
+              className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 mb-4 ${
                 sidebarCollapsed ? 'justify-center' : 'space-x-3'
               } ${
                 isToolActive('/')
-                  ? 'bg-accent text-accent-foreground'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-gradient-to-r from-sky-300 to-blue-300 text-sky-700 shadow-sm shadow-sky-300/20'
+                  : 'text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-700'
               }`}
               onClick={() => setSidebarOpen(false)}
             >
-              <Home className="h-4 w-4 shrink-0" />
-              {!sidebarCollapsed && <span>首页</span>}
+              <div className={`p-1.5 rounded-md transition-colors ${isToolActive('/') ? 'bg-gradient-to-br from-sky-300 to-blue-300 text-sky-700' : 'bg-slate-100 text-slate-500'}`}>
+                <Home className="h-3.5 w-3.5 shrink-0" />
+              </div>
+              {!sidebarCollapsed && <span className="font-semibold">首页</span>}
             </Link>
 
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
@@ -213,38 +212,40 @@ export function Layout() {
               return (
                 <div 
                   key={group.name} 
-                  className="mb-2"
+                  className="mb-3"
                 >
                   {!sidebarCollapsed ? (
                     <>
                       <button
                         onClick={() => toggleGroup(group.name)}
-                        className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                        className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 group/header"
                       >
                         <div className="flex items-center space-x-3 overflow-hidden">
-                          <GroupIcon className="h-4 w-4 shrink-0" />
-                          <span>{group.name}</span>
+                          <div className={`p-1.5 rounded-md transition-colors ${isOpen ? 'bg-gradient-to-br from-sky-300 to-blue-300 text-sky-700' : 'bg-slate-100 text-slate-500 group-hover/header:bg-sky-100 group-hover/header:text-sky-600'}`}>
+                            <GroupIcon className="h-3.5 w-3.5 shrink-0" />
+                          </div>
+                          <span className="font-semibold">{group.name}</span>
                         </div>
-                        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 ${isOpen ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {isOpen && (
-                        <div className="ml-6 mt-1 space-y-1">
+                        <div className="ml-2 mt-1.5 space-y-0.5 pl-2 border-l-2 border-slate-200">
                           {group.tools.map((tool) => {
                             const ToolIcon = tool.icon
                             return (
                               <Link
                                 key={tool.path}
                                 to={tool.path}
-                                className={`flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                                className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                   isToolActive(tool.path)
-                                    ? 'bg-accent text-accent-foreground'
-                                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                    ? 'bg-gradient-to-r from-sky-200 to-blue-200 text-sky-800 shadow-sm -ml-2'
+                                    : 'text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-700 hover:-ml-2'
                                 }`}
                                 onClick={() => setSidebarOpen(false)}
                                 title={tool.name}
                               >
-                                <ToolIcon className="h-4 w-4 shrink-0" />
+                                <ToolIcon className="h-3.5 w-3.5 shrink-0" />
                                 <span className="truncate">{tool.name}</span>
                               </Link>
                             )
@@ -326,15 +327,15 @@ export function Layout() {
 
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            className={`flex-shrink-0 flex items-center justify-center border-t transition-all ${
+            className={`flex-shrink-0 flex items-center justify-center border-t transition-all h-14 w-full ${
               sidebarCollapsed 
-                ? 'h-16 w-full hover:bg-accent' 
-                : 'h-14 w-full gap-2 hover:bg-accent/50'
+                ? 'hover:bg-accent' 
+                : 'gap-2 hover:bg-accent/50'
             }`}
             title={sidebarCollapsed ? '展开菜单' : '收起菜单'}
           >
             {sidebarCollapsed ? (
-              <ChevronRight className="h-6 w-6 text-muted-foreground" />
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
             ) : (
               <>
                 <ChevronLeft className="h-5 w-5 text-muted-foreground" />

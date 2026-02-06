@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Code2, Copy, Check, Trash2, FileJson, Undo, Redo, FlaskConical } from 'lucide-react'
-import { JsonTree } from '@/components/JsonTree'
+import { JsonTree } from '@/components/shared/JsonTree'
 import { useUndoRedo } from '@/hooks/useUndoRedo'
 
 type JsonNode = string | number | boolean | null | { [key: string]: JsonNode } | JsonNode[]
