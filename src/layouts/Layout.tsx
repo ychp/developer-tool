@@ -22,7 +22,10 @@ import {
   WrapText,
   Image as ImageIcon,
   Globe,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Phone,
+  MapPin,
+  PhoneCall
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -93,6 +96,15 @@ const menuGroups = [
     icon: Globe,
     tools: [
       { path: '/chrome-extensions', name: 'Chrome 扩展', icon: Code2 },
+    ]
+  },
+  {
+    name: '生活查询',
+    icon: Phone,
+    tools: [
+      { path: '/phone-number', name: '手机号归属', icon: Phone },
+      { path: '/postal-code', name: '邮编查询', icon: MapPin },
+      { path: '/area-code', name: '电话区号', icon: PhoneCall },
     ]
   },
 ]

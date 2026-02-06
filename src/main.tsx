@@ -23,6 +23,9 @@ import { StringJoinAndSplit } from './tools/StringJoinAndSplit'
 import { ImageLinkPreview } from './tools/ImageLinkPreview'
 import { ChromeExtensions } from './tools/ChromeExtensions'
 import { TableViewer } from './tools/TableViewer'
+import { PhoneNumber } from './tools/PhoneNumber'
+import { PostalCode } from './tools/PostalCode'
+import { AreaCode } from './tools/AreaCode'
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,9 @@ const router = createBrowserRouter([
       { path: 'qr-generator', element: <QrCodeGenerator /> },
       { path: 'number-converter', element: <NumberConverter /> },
       { path: 'jwt-decoder', element: <JwtDecoder /> },
+      { path: 'phone-number', element: <PhoneNumber /> },
+      { path: 'postal-code', element: <PostalCode /> },
+      { path: 'area-code', element: <AreaCode /> },
     ],
   },
 ])

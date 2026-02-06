@@ -20,7 +20,10 @@ import {
   WrapText,
   Image as ImageIcon,
   Globe,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Phone,
+  MapPin,
+  PhoneCall
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -153,6 +156,27 @@ const tools = [
     category: '浏览器扩展',
     gradient: 'from-cyan-500 to-blue-600'
   },
+  {
+    path: '/phone-number',
+    name: '手机号归属',
+    icon: Phone,
+    category: '生活查询',
+    gradient: 'from-emerald-500 to-emerald-600'
+  },
+  {
+    path: '/postal-code',
+    name: '邮编查询',
+    icon: MapPin,
+    category: '生活查询',
+    gradient: 'from-teal-500 to-teal-600'
+  },
+  {
+    path: '/area-code',
+    name: '电话区号',
+    icon: PhoneCall,
+    category: '生活查询',
+    gradient: 'from-cyan-500 to-cyan-600'
+  },
 ]
 
 const categories = Array.from(new Set(tools.map(t => t.category)))
@@ -188,6 +212,7 @@ const categoryBgColors: Record<string, string> = {
   '媒体工具': 'from-blue-50 to-violet-50',
   '加密工具': 'from-indigo-50 to-blue-50',
   '浏览器扩展': 'from-cyan-50 to-blue-50',
+  '生活查询': 'from-emerald-50 to-cyan-50',
 }
 
 export function Home() {
