@@ -359,7 +359,7 @@ export function Layout() {
             <footer className="py-6 text-center text-sm text-muted-foreground border-t">
               <div className="max-w-7xl mx-auto space-y-3">
                 <div className="flex items-center justify-center gap-4 flex-wrap">
-                  <span>© 2024 Create By 云止.</span>
+                  <span>© 2026 Create By 云止.</span>
                   <a 
                     href="https://github.com/ychp/developer-tool"
                     target="_blank" 
