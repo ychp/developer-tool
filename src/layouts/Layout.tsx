@@ -25,7 +25,8 @@ import {
   FileSpreadsheet,
   Phone,
   MapPin,
-  PhoneCall
+  PhoneCall,
+  BrainCircuit
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -105,6 +106,13 @@ const menuGroups = [
       { path: '/phone-number', name: '手机号归属', icon: Phone },
       { path: '/postal-code', name: '邮编查询', icon: MapPin },
       { path: '/area-code', name: '电话区号', icon: PhoneCall },
+    ]
+  },
+  {
+    name: 'AI 工具',
+    icon: BrainCircuit,
+    tools: [
+      { path: '/token-calculator', name: 'Token 计算器', icon: Calculator },
     ]
   },
 ]
@@ -371,19 +379,19 @@ export function Layout() {
 
         <main className="flex-1 overflow-y-auto">
           <div className="min-h-full flex flex-col p-4 lg:p-8">
-            <div className="flex-1">
+            <div className="flex-1 mb-8">
               <div className="max-w-7xl mx-auto">
                 <Outlet />
               </div>
             </div>
-            
-            <footer className="py-6 text-center text-sm text-muted-foreground border-t">
+
+            <footer className="py-6 text-center text-sm text-muted-foreground border-t mt-8">
               <div className="max-w-7xl mx-auto space-y-3">
                 <div className="flex items-center justify-center gap-4 flex-wrap">
                   <span>© 2026 Create By 云止.</span>
-                  <a 
+                  <a
                     href="https://github.com/ychp/developer-tool"
-                    target="_blank" 
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary/80 transition-colors inline-flex items-center gap-1"
                   >
@@ -392,9 +400,9 @@ export function Layout() {
                   </a>
                 </div>
                 <div>
-                  <a 
-                    href="https://beian.miit.gov.cn/" 
-                    target="_blank" 
+                  <a
+                    href="https://beian.miit.gov.cn/"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary hover:text-primary/80 transition-colors"
                   >
