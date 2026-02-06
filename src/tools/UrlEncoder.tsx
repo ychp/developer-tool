@@ -64,8 +64,8 @@ export function UrlEncoder() {
         onProcess={process}
         onClear={clear}
         onSwap={swap}
-        inputPlaceholder="输入要编码的 URL"
-        outputPlaceholder="编码结果将显示在这里"
+        inputPlaceholder={mode === 'encode' ? '输入要编码的 URL' : '输入要解码的 URL 编码字符串'}
+        outputPlaceholder={mode === 'encode' ? '编码结果将显示在这里' : '解码结果将显示在这里'}
         modeLabels={{ encode: '编码', decode: '解码' }}
         extraActions={
           <CopyButton 

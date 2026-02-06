@@ -194,9 +194,9 @@ export function Home() {
     <div className="p-6 max-w-[1600px] mx-auto">
       <div className="flex gap-6 items-start">
         <div className="flex-[0_0_380px] hidden xl:block">
-          <Card className="shadow-lg border border-slate-200/60 hover:shadow-xl transition-all duration-300">
-            <CardHeader className="bg-gradient-to-br from-sky-50 via-cyan-50 to-blue-50">
-              <CardTitle className="text-xl flex items-center gap-2 text-sky-700">
+          <Card className="shadow-lg border border-slate-200/60 dark:border-slate-700/60 hover:shadow-2xl transition-all duration-300 bg-white dark:bg-slate-950/60 backdrop-blur-xl dark:shadow-2xl dark:shadow-black/40 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
+            <CardHeader className="bg-gradient-to-br from-sky-50 via-cyan-50 to-blue-50 dark:from-slate-800/50 dark:to-slate-900/50 border-b border-slate-200/60 dark:border-slate-700/50">
+              <CardTitle className="text-xl flex items-center gap-2 text-sky-700 dark:text-slate-200">
                 <Calendar className="h-5 w-5" />
                 日历
               </CardTitle>
@@ -214,10 +214,10 @@ export function Home() {
               return (
                 <Card
                   key={category}
-                  className="group hover:shadow-xl transition-all duration-300 border border-slate-200/60 hover:border-slate-300/80 overflow-hidden"
+                  className="group hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 border border-slate-200/60 dark:border-slate-700/60 hover:border-slate-300/80 dark:hover:border-slate-600/60 overflow-hidden bg-white dark:bg-slate-950/60 backdrop-blur-xl dark:shadow-2xl dark:shadow-black/40 relative before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none"
                 >
-                  <CardHeader className={`bg-gradient-to-br ${categoryBgColors[category]} border-b border-slate-200/60`}>
-                    <CardTitle className="text-lg flex items-center gap-2 text-slate-700">
+                  <CardHeader className={`bg-gradient-to-br ${categoryBgColors[category]} dark:from-slate-800/50 dark:to-slate-900/50 border-b border-slate-200/60 dark:border-slate-700/50`}>
+                    <CardTitle className="text-lg flex items-center gap-2 text-slate-700 dark:text-slate-200">
                       <div className={`p-2 rounded-lg ${categoryColors[category]} text-white shadow-sm`}>
                         <CategoryIcon className="h-4 w-4" />
                       </div>
@@ -233,14 +233,14 @@ export function Home() {
                           <Link key={tool.path} to={tool.path}>
                             <Button
                               variant="ghost"
-                              className="w-full justify-start h-11 px-4 hover:bg-slate-100 hover:scale-[1.02] transition-all duration-200 group/btn"
+                              className="w-full justify-start h-11 px-4 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:scale-[1.02] transition-all duration-200 group/btn"
                             >
                               <div 
                                 className={`p-1.5 rounded mr-3 text-white group-hover/btn:scale-110 transition-transform shadow-sm bg-gradient-to-br ${tool.gradient}`}
                               >
                                 <Icon className="h-3.5 w-3.5" />
                               </div>
-                              <span className="font-medium">{tool.name}</span>
+                              <span className="font-medium text-slate-700 dark:text-slate-200">{tool.name}</span>
                             </Button>
                           </Link>
                         )

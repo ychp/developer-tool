@@ -318,14 +318,14 @@ export function CalendarCard() {
       </div>
 
       <div className="flex items-center justify-center gap-4">
-        <Button variant="ghost" size="icon" onClick={prevDay}>
-          <ChevronLeft className="h-5 w-5" />
+        <Button variant="ghost" size="icon" onClick={prevDay} className="hover:bg-slate-100 dark:hover:bg-slate-800">
+          <ChevronLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
         </Button>
         <span className="text-5xl font-bold text-red-500 w-20 text-center">
           {today.getDay()}
         </span>
-        <Button variant="ghost" size="icon" onClick={nextDay}>
-          <ChevronRight className="h-5 w-5" />
+        <Button variant="ghost" size="icon" onClick={nextDay} className="hover:bg-slate-100 dark:hover:bg-slate-800">
+          <ChevronRight className="h-5 w-5 text-slate-700 dark:text-slate-300" />
         </Button>
       </div>
 
@@ -336,8 +336,8 @@ export function CalendarCard() {
       <div className="border-t pt-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span className="text-xs">假期倒计时</span>
+            <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+            <span className="text-xs text-slate-600 dark:text-slate-400">假期倒计时</span>
           </div>
           {holidayMessages.length > 1 && (
             <Button
@@ -351,7 +351,7 @@ export function CalendarCard() {
             >
               {isExpanded ? '收起' : '展开'}
               <ChevronDown 
-                className={`h-3 w-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} 
+                className={`h-3 w-3 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
               />
             </Button>
           )}
@@ -375,10 +375,10 @@ export function CalendarCard() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6"
+                    className="h-6 w-6 hover:bg-slate-100 dark:hover:bg-slate-800"
                     onClick={() => setCurrentIndex((prev) => (prev > 0 ? prev - 1 : holidayMessages.length - 1))}
                   >
-                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <ChevronLeft className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
                   </Button>
                   <div className="flex gap-1">
                     {holidayMessages.map((_, index) => (
@@ -393,10 +393,10 @@ export function CalendarCard() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6"
+                    className="h-6 w-6 hover:bg-slate-100 dark:hover:bg-slate-800"
                     onClick={() => setCurrentIndex((prev) => (prev < holidayMessages.length - 1 ? prev + 1 : 0))}
                   >
-                    <ChevronRight className="h-3.5 w-3.5" />
+                    <ChevronRight className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
                   </Button>
                 </div>
               )}

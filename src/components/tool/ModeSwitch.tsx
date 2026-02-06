@@ -22,7 +22,10 @@ export function ModeSwitch<T extends string>({
           key={mode}
           onClick={() => onModeChange(mode)}
           variant={currentMode === mode ? 'default' : 'outline'}
-          className="flex-1"
+          className={`flex-1 ${currentMode === mode
+            ? 'bg-gradient-to-r from-sky-500 to-blue-500 hover:from-sky-600 hover:to-blue-600 text-white shadow-lg shadow-sky-500/30'
+            : 'border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200'
+          }`}
         >
           {labels?.[mode] || mode}
         </Button>

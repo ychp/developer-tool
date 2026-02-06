@@ -70,8 +70,8 @@ export function Base64() {
         onProcess={process}
         onClear={clear}
         onSwap={swap}
-        inputPlaceholder="输入要编码的文本"
-        outputPlaceholder="编码结果将显示在这里"
+        inputPlaceholder={mode === 'encode' ? '输入要编码的文本' : '输入要解码的 Base64 字符串'}
+        outputPlaceholder={mode === 'encode' ? '编码结果将显示在这里' : '解码结果将显示在这里'}
         modeLabels={{ encode: '编码', decode: '解码' }}
         extraActions={
           <CopyButton 

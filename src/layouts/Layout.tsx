@@ -24,7 +24,8 @@ import {
   Globe,
   FileSpreadsheet
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '../components/ui/button'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { useState, useRef, useEffect } from 'react'
 
 const menuGroups = [
@@ -153,35 +154,40 @@ export function Layout() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden relative z-10">
-      <header className="flex-shrink-0 border-b bg-gradient-to-r from-sky-50 via-cyan-50 to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 backdrop-blur supports-[backdrop-filter]:bg-background/60 relative overflow-hidden">
+      <header className="flex-shrink-0 border-b border-slate-200 dark:border-white/10 bg-gradient-to-r from-sky-50 via-cyan-50 to-blue-50 dark:from-slate-950/60 dark:via-slate-950/50 dark:to-slate-950/60 backdrop-blur-xl dark:backdrop-blur-2xl dark:shadow-2xl dark:shadow-black/30 supports-[backdrop-filter]:bg-background/60 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-sky-500/10 before:via-cyan-500/10 before:to-blue-500/10 before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="relative flex h-16 items-center px-4 lg:px-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden mr-2 hover:bg-blue-100 dark:hover:bg-gray-800"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
-              <div className="relative bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg p-2">
-                <Code2 className="h-6 w-6 text-white" />
+        <div className="relative flex h-16 items-center justify-between px-4 lg:px-6">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden mr-2 hover:bg-blue-100 dark:hover:bg-gray-800"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-lg blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                <div className="relative bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg p-2">
+                  <Code2 className="h-6 w-6 text-white" />
+                </div>
               </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-lg bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">在线工具箱</span>
-              <span className="text-xs text-muted-foreground hidden sm:block">18+ 免费实用工具</span>
-            </div>
-          </Link>
+              <div className="flex flex-col">
+                <span className="font-bold text-lg bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">在线工具箱</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">18+ 免费实用工具</span>
+              </div>
+            </Link>
+          </div>
+          <div className="flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside 
-          className={`fixed lg:relative inset-y-0 left-0 z-40 transform border-r bg-background transition-all duration-200 ease-in-out flex flex-col ${
+        <aside
+          className={`fixed lg:relative inset-y-0 left-0 z-40 transform border-r border-slate-200 dark:border-white/10 bg-background backdrop-blur-xl dark:bg-slate-950/50 dark:backdrop-blur-2xl dark:shadow-2xl dark:shadow-black/30 transition-all duration-200 ease-in-out flex flex-col ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } ${sidebarCollapsed ? 'w-16' : 'w-64'} lg:translate-x-0`}
         >
@@ -192,12 +198,12 @@ export function Layout() {
                 sidebarCollapsed ? 'justify-center' : 'space-x-3'
               } ${
                 isToolActive('/')
-                  ? 'bg-gradient-to-r from-sky-300 to-blue-300 text-sky-700 shadow-sm shadow-sky-300/20'
-                  : 'text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-700'
+                  ? 'bg-gradient-to-r from-sky-300 to-blue-300 dark:from-sky-500/50 dark:to-blue-500/50 text-sky-700 dark:text-slate-200 shadow-sm shadow-sky-300/20 dark:shadow-sky-500/20'
+                  : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-sky-700 dark:hover:text-slate-200'
               }`}
               onClick={() => setSidebarOpen(false)}
             >
-              <div className={`p-1.5 rounded-md transition-colors ${isToolActive('/') ? 'bg-gradient-to-br from-sky-300 to-blue-300 text-sky-700' : 'bg-slate-100 text-slate-500'}`}>
+              <div className={`p-1.5 rounded-md transition-colors ${isToolActive('/') ? 'bg-gradient-to-br from-sky-300 to-blue-300 dark:from-sky-500 dark:to-blue-500 text-sky-700 dark:text-white' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'}`}>
                 <Home className="h-3.5 w-3.5 shrink-0" />
               </div>
               {!sidebarCollapsed && <span className="font-semibold">首页</span>}
@@ -218,19 +224,19 @@ export function Layout() {
                     <>
                       <button
                         onClick={() => toggleGroup(group.name)}
-                        className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 group/header"
+                        className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 group/header"
                       >
                         <div className="flex items-center space-x-3 overflow-hidden">
-                          <div className={`p-1.5 rounded-md transition-colors ${isOpen ? 'bg-gradient-to-br from-sky-300 to-blue-300 text-sky-700' : 'bg-slate-100 text-slate-500 group-hover/header:bg-sky-100 group-hover/header:text-sky-600'}`}>
+                          <div className={`p-1.5 rounded-md transition-colors ${isOpen ? 'bg-gradient-to-br from-sky-300 to-blue-300 dark:from-sky-500 dark:to-blue-500 text-sky-700 dark:text-white' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover/header:bg-sky-100 dark:group-hover/header:bg-slate-700/50 group-hover/header:text-sky-600 dark:group-hover/header:text-slate-300'}`}>
                             <GroupIcon className="h-3.5 w-3.5 shrink-0" />
                           </div>
                           <span className="font-semibold">{group.name}</span>
                         </div>
-                        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 ${isOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${isOpen ? 'rotate-180' : ''}`} />
                       </button>
                       
                       {isOpen && (
-                        <div className="ml-2 mt-1.5 space-y-0.5 pl-2 border-l-2 border-slate-200">
+                        <div className="ml-2 mt-1.5 space-y-0.5 pl-2 border-l-2 border-slate-200 dark:border-slate-700">
                           {group.tools.map((tool) => {
                             const ToolIcon = tool.icon
                             return (
@@ -239,8 +245,8 @@ export function Layout() {
                                 to={tool.path}
                                 className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                                   isToolActive(tool.path)
-                                    ? 'bg-gradient-to-r from-sky-200 to-blue-200 text-sky-800 shadow-sm -ml-2'
-                                    : 'text-slate-600 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 hover:text-sky-700 hover:-ml-2'
+                                    ? 'bg-gradient-to-r from-sky-200 to-blue-200 dark:from-sky-500/30 dark:to-blue-500/30 text-sky-800 dark:text-slate-200 shadow-sm -ml-2'
+                                    : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-sky-700 dark:hover:text-slate-200 hover:-ml-2'
                                 }`}
                                 onClick={() => setSidebarOpen(false)}
                                 title={tool.name}

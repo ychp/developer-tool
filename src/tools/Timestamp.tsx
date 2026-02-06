@@ -171,22 +171,22 @@ export function Timestamp() {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <Clock className="h-6 w-6" />
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2 text-slate-700 dark:text-slate-200">
+          <Clock className="h-6 w-6 text-slate-600 dark:text-slate-300" />
           时间戳转换
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground text-slate-600 dark:text-slate-400">
           Unix 时间戳与日期时间相互转换、时间计算工具
         </p>
       </div>
 
-      <Card className="bg-primary/5 border-primary/20">
+      <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20 dark:border-primary/30">
         <CardContent className="py-3">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground">当前时间</p>
-              <p className="text-lg font-bold">{currentTime}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground text-slate-600 dark:text-slate-400">当前时间</p>
+              <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{currentTime}</p>
+              <p className="text-xs text-muted-foreground text-slate-600 dark:text-slate-400 mt-0.5">
                 时间戳: {currentTimestamp}s | {currentTimestamp * 1000}ms
               </p>
             </div>
@@ -196,22 +196,23 @@ export function Timestamp() {
               size="sm"
               title="同步互联网时间"
               disabled={isLoadingInternetTime}
+              className="border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <RefreshCw className={`h-4 w-4 ${isLoadingInternetTime ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 text-slate-700 dark:text-slate-300 ${isLoadingInternetTime ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </CardContent>
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">时间戳转换</CardTitle>
-            <CardDescription className="text-xs">时间戳与多种日期格式相互转换</CardDescription>
+        <Card className="bg-white dark:bg-slate-950/60 backdrop-blur-xl border-slate-200 dark:border-slate-700/60 dark:shadow-2xl dark:shadow-black/40 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
+          <CardHeader className="pb-3 relative">
+            <CardTitle className="text-base text-slate-700 dark:text-slate-200">时间戳转换</CardTitle>
+            <CardDescription className="text-xs text-slate-500 dark:text-slate-400">时间戳与多种日期格式相互转换</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 relative">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">时间戳 (毫秒)</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">时间戳 (毫秒)</label>
               <div className="flex gap-2">
                 <Input
                   type="number"
@@ -226,14 +227,14 @@ export function Timestamp() {
                   placeholder="输入时间戳"
                   className="font-mono text-sm h-8"
                 />
-                <Button onClick={useCurrentTimestamp} variant="outline" size="icon" title="当前时间戳" className="h-8 w-8">
-                  <Clock className="h-3.5 w-3.5" />
+                <Button onClick={useCurrentTimestamp} variant="outline" size="icon" title="当前时间戳" className="h-8 w-8 border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <Clock className="h-3.5 w-3.5 text-slate-700 dark:text-slate-300" />
                 </Button>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">年-月-日 时:分:秒</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">年-月-日 时:分:秒</label>
               <Input
                 type="datetime-local"
                 value={dateTimeInput}
@@ -250,7 +251,7 @@ export function Timestamp() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">年月日 (YYYYMMDD)</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">年月日 (YYYYMMDD)</label>
               <Input
                 type="text"
                 value={dateYMdInput}
@@ -269,14 +270,14 @@ export function Timestamp() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">时间计算</CardTitle>
-            <CardDescription className="text-xs">计算日期差值和推算未来日期</CardDescription>
+        <Card className="bg-white dark:bg-slate-950/60 backdrop-blur-xl border-slate-200 dark:border-slate-700/60 dark:shadow-2xl dark:shadow-black/40 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
+          <CardHeader className="pb-3 relative">
+            <CardTitle className="text-base text-slate-700 dark:text-slate-200">时间计算</CardTitle>
+            <CardDescription className="text-xs text-slate-500 dark:text-slate-400">计算日期差值和推算未来日期</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 relative">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">开始时间</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">开始时间</label>
               <Input
                 type="date"
                 value={startDate}
@@ -291,12 +292,12 @@ export function Timestamp() {
                   calculateDateDifference(newDate, endDate)
                   calculateFutureDate(newDate, addDays)
                 }}
-                className="text-sm h-8"
+                className="text-sm h-8 cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:bg-slate-100 dark:[&::-webkit-calendar-picker-indicator]:hover:bg-slate-700"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">截止时间</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">截止时间</label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="date"
@@ -309,17 +310,17 @@ export function Timestamp() {
                   onBlur={(e) => {
                     calculateDateDifference(startDate, e.target.value)
                   }}
-                  className="flex-1 text-sm h-8"
+                  className="flex-1 text-sm h-8 cursor-pointer [&::-webkit-calendar-picker-indicator]:hover:bg-slate-100 dark:[&::-webkit-calendar-picker-indicator]:hover:bg-slate-700"
                 />
-                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-xs font-medium">
+                <ArrowRight className="h-3.5 w-3.5 text-slate-600 dark:text-slate-400 flex-shrink-0" />
+                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   相差 {diffDays} 天
                 </span>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium">增加天数</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">增加天数</label>
               <div className="flex gap-2 items-center">
                 <Input
                   type="number"
@@ -335,7 +336,7 @@ export function Timestamp() {
                   placeholder="输入天数"
                   className="flex-1 text-sm h-8"
                 />
-                <span className="text-xs text-muted-foreground whitespace-nowrap">天后为</span>
+                <span className="text-xs text-muted-foreground text-slate-500 dark:text-slate-400 whitespace-nowrap">天后为</span>
                 <span className="text-xs font-medium whitespace-nowrap">
                   {futureDate || '-'}
                 </span>
@@ -345,15 +346,15 @@ export function Timestamp() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">时间转秒/毫秒</CardTitle>
-          <CardDescription className="text-xs">解析时间长度并转换为秒和毫秒，支持格式: 1d3h15m30s</CardDescription>
+      <Card className="bg-white dark:bg-slate-950/60 backdrop-blur-xl border-slate-200 dark:border-slate-700/60 dark:shadow-2xl dark:shadow-black/40 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
+        <CardHeader className="pb-3 relative">
+          <CardTitle className="text-base text-slate-700 dark:text-slate-200">时间转秒/毫秒</CardTitle>
+          <CardDescription className="text-xs text-slate-500 dark:text-slate-400">解析时间长度并转换为秒和毫秒，支持格式: 1d3h15m30s</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative">
           <div className="flex gap-3 items-end">
             <div className="flex-1 space-y-1.5">
-              <label className="text-xs font-medium">时间长度</label>
+              <label className="text-xs font-medium text-slate-700 dark:text-slate-300">时间长度</label>
               <Input
                 type="text"
                 value={timeDuration}
