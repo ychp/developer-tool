@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Hash } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Hash, Copy, Check, Trash2 } from 'lucide-react'
+import { ToolPageHeader } from '@/components/tool/ToolPageHeader'
+import { CopyButton } from '@/components/tool/CopyButton'
 import MD5 from 'crypto-js/md5'
 import SHA1 from 'crypto-js/sha1'
 import SHA256 from 'crypto-js/sha256'
@@ -14,44 +15,6 @@ export function HashGenerator() {
   const [input, setInput] = useState('')
   const [hashType, setHashType] = useState<HashType>('md5')
   const [output, setOutput] = useState('')
-  const [copied, setCopied] = useState(false)
-
-  const generateHash = () => {
-    if (!input) {
-      setOutput('')
-      return
-    }
-
-    let hash = ''
-    switch (hashType) {
-      case 'md5':
-        hash = MD5(input).toString()
-        break
-      case 'sha1':
-        hash = SHA1(input).toString()
-        break
-      case 'sha256':
-        hash = SHA256(input).toString()
-        break
-      case 'sha512':
-        hash = SHA512(input).toString()
-        break
-    }
-    setOutput(hash)
-  }
-
-  const copyToClipboard = async () => {
-    if (output) {
-      await navigator.clipboard.writeText(output)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
-  }
-
-  const clear = () => {
-    setInput('')
-    setOutput('')
-  }
 
   const allHashes = input ? {
     md5: MD5(input).toString(),
@@ -60,17 +23,36 @@ export function HashGenerator() {
     sha512: SHA512(input).toString(),
   } : null
 
+  useEffect(() => {
+    if (input && hashType) {
+      let hash = ''
+      switch (hashType) {
+        case 'md5':
+          hash = MD5(input).toString()
+          break
+        case 'sha1':
+          hash = SHA1(input).toString()
+          break
+        case 'sha256':
+          hash = SHA256(input).toString()
+          break
+        case 'sha512':
+          hash = SHA512(input).toString()
+          break
+      }
+      setOutput(hash)
+    } else {
+      setOutput('')
+    }
+  }, [input, hashType])
+
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-          <Hash className="h-8 w-8" />
-          哈希生成器
-        </h1>
-        <p className="text-muted-foreground">
-          生成 MD5、SHA1、SHA256、SHA512 哈希值
-        </p>
-      </div>
+      <ToolPageHeader
+        icon={<Hash className="h-8 w-8" />}
+        title="哈希生成器"
+        description="生成 MD5、SHA1、SHA256、SHA512 哈希值"
+      />
 
       <Card>
         <CardHeader>
@@ -85,98 +67,89 @@ export function HashGenerator() {
             className="min-h-[120px] font-mono text-sm"
           />
           <div className="flex gap-2">
-            <Button onClick={generateHash} className="flex-1">
-              生成哈希
-            </Button>
-            <Button onClick={clear} variant="ghost" size="icon">
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>算法选择</CardTitle>
-          <CardDescription>选择哈希算法</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {(['md5', 'sha1', 'sha256', 'sha512'] as HashType[]).map((type) => (
-              <Button
-                key={type}
-                onClick={() => setHashType(type)}
-                variant={hashType === type ? 'default' : 'outline'}
-                className="font-mono text-sm uppercase"
-              >
-                {type}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {output && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{hashType.toUpperCase()} 结果</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 rounded-lg bg-muted font-mono text-sm break-all">
-              {output}
-            </div>
-            <Button
-              onClick={copyToClipboard}
-              variant={copied ? "outline" : "default"}
-              className="w-full"
+            <button
+              onClick={() => setHashType('md5')}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                hashType === 'md5'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
             >
-              {copied ? (
-                <>
-                  <Check className="mr-2 h-4 w-4" />
-                  已复制
-                </>
-              ) : (
-                <>
-                  <Copy className="mr-2 h-4 w-4" />
-                  复制结果
-                </>
-              )}
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+              MD5
+            </button>
+            <button
+              onClick={() => setHashType('sha1')}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                hashType === 'sha1'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              SHA1
+            </button>
+            <button
+              onClick={() => setHashType('sha256')}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                hashType === 'sha256'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              SHA256
+            </button>
+            <button
+              onClick={() => setHashType('sha512')}
+              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                hashType === 'sha512'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+              }`}
+            >
+              SHA512
+            </button>
+          </div>
+        </CardContent>
+      </Card>
 
       {allHashes && (
         <Card>
           <CardHeader>
             <CardTitle>所有哈希值</CardTitle>
-            <CardDescription>当前输入的所有哈希算法结果</CardDescription>
+            <CardDescription>当前输入的所有哈希值</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Object.entries(allHashes).map(([type, value]) => (
-                <div key={type} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium uppercase">{type}</span>
-                    <Button
-                      onClick={() => {
-                        navigator.clipboard.writeText(value)
-                      }}
-                      variant="ghost"
-                      size="sm"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </Button>
-                  </div>
-                  <div className="p-3 rounded bg-muted font-mono text-xs break-all">
-                    {value}
-                  </div>
+          <CardContent className="space-y-4">
+            {Object.entries(allHashes).map(([type, hash]) => (
+              <div key={type} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium uppercase">{type}</span>
+                  <CopyButton text={hash} size="sm" variant="ghost" />
                 </div>
-              ))}
-            </div>
+                <div className="p-3 bg-muted rounded-md">
+                  <code className="text-sm break-all font-mono">{hash}</code>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>输出结果</CardTitle>
+          <CardDescription>选中的哈希算法结果</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Textarea
+            value={output}
+            readOnly
+            placeholder="哈希值将显示在这里"
+            className="min-h-[120px] font-mono text-sm"
+          />
+          <div className="flex gap-2">
+            <CopyButton text={output} className="flex-1" defaultLabel="复制哈希值" copiedLabel="已复制" />
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

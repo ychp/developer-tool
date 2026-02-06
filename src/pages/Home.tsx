@@ -18,7 +18,8 @@ import {
   Sparkles,
   WrapText,
   Image as ImageIcon,
-  Globe
+  Globe,
+  FileSpreadsheet
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -124,6 +125,13 @@ const tools = [
     color: 'bg-sky-500'
   },
   {
+    path: '/table-viewer',
+    name: '表格预览',
+    icon: FileSpreadsheet,
+    category: '媒体工具',
+    color: 'bg-green-500'
+  },
+  {
     path: '/hash-generator',
     name: '哈希生成',
     icon: Lock,
@@ -159,25 +167,36 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   '浏览器扩展': Globe,
 }
 
+const categoryColors: Record<string, string> = {
+  '格式化': 'bg-blue-500',
+  '编码转换': 'bg-purple-500',
+  '文本处理': 'bg-cyan-500',
+  '转换工具': 'bg-amber-500',
+  '生成器': 'bg-emerald-500',
+  '媒体工具': 'bg-sky-500',
+  '加密工具': 'bg-red-500',
+  '浏览器扩展': 'bg-blue-600',
+}
+
 export function Home() {
   const toolCount = tools.length
   const categoryCount = categories.length
 
   return (
     <div className="p-6 max-w-[1600px] mx-auto space-y-8">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white shadow-2xl">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-6 md:p-8 text-white shadow-2xl">
         <div className="relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">开发者工具箱</h1>
-          <p className="text-lg md:text-xl opacity-90 max-w-2xl mb-6">
-            为您提供各种实用的在线工具，提高工作效率
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">在线工具箱</h1>
+          <p className="text-base md:text-lg opacity-90 max-w-2xl mb-4">
+            免费实用的在线工具集合，满足您的工作与生活需求
           </p>
-          <div className="flex gap-6 text-sm">
+          <div className="flex gap-4 text-sm">
             <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <span className="font-bold text-2xl">{toolCount}</span>
+              <span className="font-bold text-xl">{toolCount}</span>
               <span className="ml-2">个工具</span>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2">
-              <span className="font-bold text-2xl">{categoryCount}</span>
+              <span className="font-bold text-xl">{categoryCount}</span>
               <span className="ml-2">个分类</span>
             </div>
           </div>
@@ -212,15 +231,7 @@ export function Home() {
                 >
                   <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
                     <CardTitle className="text-lg flex items-center gap-2 text-blue-700">
-                      <div className={`p-2 rounded-lg ${category === '格式化' ? 'bg-blue-500' :
-                        category === '编码转换' ? 'bg-purple-500' :
-                        category === '文本处理' ? 'bg-cyan-500' :
-                        category === '转换工具' ? 'bg-amber-500' :
-                        category === '生成器' ? 'bg-emerald-500' :
-                        category === '媒体工具' ? 'bg-sky-500' :
-                        category === '加密工具' ? 'bg-red-500' :
-                        category === '浏览器扩展' ? 'bg-blue-600' :
-                        'bg-gray-500'} text-white`}>
+                      <div className={`p-2 rounded-lg ${categoryColors[category] || 'bg-gray-500'} text-white`}>
                         <CategoryIcon className="h-4 w-4" />
                       </div>
                       {category}

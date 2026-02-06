@@ -177,7 +177,7 @@ export function Layout() {
           </Button>
           <Link to="/" className="flex items-center space-x-2">
             <Code2 className="h-6 w-6" />
-            <span className="font-bold">开发者工具箱</span>
+            <span className="font-bold">在线工具箱</span>
           </Link>
         </div>
       </header>
