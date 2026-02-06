@@ -253,7 +253,7 @@ export function Home() {
 
         {/* 工具分类网格 */}
         <div className="flex-1 min-w-0">
-          <div className="grid gap-3 sm:gap-4 xl:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid gap-3 sm:gap-4 xl:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3">
             {categories.map((category) => {
               const CategoryIcon = categoryIcons[category] || Sparkles
               return (
