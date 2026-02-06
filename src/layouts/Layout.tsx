@@ -21,7 +21,8 @@ import {
   ChevronRight,
   WrapText,
   Image as ImageIcon,
-  Globe
+  Globe,
+  FileSpreadsheet
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useRef, useEffect } from 'react'
@@ -75,6 +76,7 @@ const menuGroups = [
     icon: ImageIcon,
     tools: [
       { path: '/image-link-preview', name: '图片链接预览', icon: ImageIcon },
+      { path: '/table-viewer', name: '表格预览', icon: FileSpreadsheet },
     ]
   },
   {

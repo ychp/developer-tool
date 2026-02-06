@@ -21,6 +21,7 @@ import { JwtDecoder } from './tools/JwtDecoder'
 import { StringJoinAndSplit } from './tools/StringJoinAndSplit'
 import { ImageLinkPreview } from './tools/ImageLinkPreview'
 import { ChromeExtensions } from './tools/ChromeExtensions'
+import { TableViewer } from './tools/TableViewer'
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: 'url-encoder', element: <UrlEncoder /> },
       { path: 'string-join-split', element: <StringJoinAndSplit /> },
       { path: 'image-link-preview', element: <ImageLinkPreview /> },
+      { path: 'table-viewer', element: <TableViewer /> },
       { path: 'chrome-extensions', element: <ChromeExtensions /> },
       { path: 'timestamp', element: <Timestamp /> },
       { path: 'uuid', element: <UUID /> },
