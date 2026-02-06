@@ -196,15 +196,7 @@ export function Home() {
   
   return (
     <div className="px-3 sm:px-4 md:px-6 py-4 sm:py-6 max-w-[1920px] mx-auto relative">
-      {/* 移动端/平板菜单按钮 */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="xl:hidden fixed top-20 right-4 z-50 p-3 rounded-full bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-        aria-label="切换菜单"
-      >
-        <Menu className="h-5 w-5" />
-      </button>
-
+     
       {/* 移动端/平板日历 - 显示在顶部 */}
       <div className="mb-4 sm:mb-6 xl:hidden">
         <Card className="shadow-lg border border-slate-200/60 dark:border-slate-700/60 bg-white dark:bg-slate-950/60 backdrop-blur-xl dark:shadow-2xl dark:shadow-black/40 relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 dark:before:opacity-100 before:pointer-events-none">
