@@ -4,6 +4,7 @@ import {
   Code2, 
   Hash, 
   Link2, 
+  ArrowRightLeft,
   Clock, 
   Calendar,
   KeySquare,
@@ -177,6 +178,27 @@ const tools = [
     category: '生活查询',
     gradient: 'from-cyan-500 to-cyan-600'
   },
+  {
+    path: '/token-calculator',
+    name: 'Token 计算',
+    icon: Calculator,
+    category: 'AI 工具',
+    gradient: 'from-violet-500 to-purple-600'
+  },
+  {
+    path: '/cron-generator',
+    name: 'Cron 生成',
+    icon: Clock,
+    category: '生成器',
+    gradient: 'from-sky-500 to-blue-600'
+  },
+  {
+    path: '/json-yaml-converter',
+    name: 'JSON/YAML 转换',
+    icon: ArrowRightLeft,
+    category: '编码转换',
+    gradient: 'from-teal-500 to-cyan-600'
+  },
 ]
 
 const categories = Array.from(new Set(tools.map(t => t.category)))
@@ -190,6 +212,8 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   '媒体工具': ImageIcon,
   '加密工具': Lock,
   '浏览器扩展': Globe,
+  '生活查询': MapPin,
+  'AI 工具': Sparkles,
 }
 
 const categoryColors: Record<string, string> = {
@@ -201,6 +225,8 @@ const categoryColors: Record<string, string> = {
   '媒体工具': 'bg-gradient-to-br from-blue-500 to-violet-600',
   '加密工具': 'bg-gradient-to-br from-indigo-500 to-blue-600',
   '浏览器扩展': 'bg-gradient-to-br from-cyan-500 to-blue-600',
+  '生活查询': 'bg-gradient-to-br from-emerald-500 to-cyan-600',
+  'AI 工具': 'bg-gradient-to-br from-violet-500 to-purple-600',
 }
 
 const categoryBgColors: Record<string, string> = {
@@ -213,6 +239,7 @@ const categoryBgColors: Record<string, string> = {
   '加密工具': 'from-indigo-50 to-blue-50',
   '浏览器扩展': 'from-cyan-50 to-blue-50',
   '生活查询': 'from-emerald-50 to-cyan-50',
+  'AI 工具': 'from-violet-50 to-purple-50',
 }
 
 export function Home() {

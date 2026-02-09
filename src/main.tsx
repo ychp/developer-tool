@@ -27,6 +27,8 @@ import { PhoneNumber } from './tools/PhoneNumber'
 import { PostalCode } from './tools/PostalCode'
 import { AreaCode } from './tools/AreaCode'
 import { TokenCalculator } from './tools/TokenCalculator'
+import { CronGenerator } from './tools/CronGenerator'
+import { JsonYamlConverter } from './tools/JsonYamlConverter'
 
 const router = createBrowserRouter([
   {
@@ -56,6 +58,8 @@ const router = createBrowserRouter([
       { path: 'postal-code', element: <PostalCode /> },
       { path: 'area-code', element: <AreaCode /> },
       { path: 'token-calculator', element: <TokenCalculator /> },
+      { path: 'cron-generator', element: <CronGenerator /> },
+      { path: 'json-yaml-converter', element: <JsonYamlConverter /> },
     ],
   },
 ])

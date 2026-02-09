@@ -1,16 +1,24 @@
-import { useState, useMemo } from 'react'
-import { Calculator, Trash2, Info, ChevronDown, ChevronUp, Variable, Sparkles } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
+import { Calculator, Trash2, Info, ChevronDown, ChevronUp, Variable, Sparkles, Eye, EyeOff, Save } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ToolPageHeader } from '@/components/tool/ToolPageHeader'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 import { getEncoding } from 'js-tiktoken'
 
 interface TokenInfo {
   tokenCount: number
   charCount: number
   avgTokensPerChar: number
+}
+
+interface TokenWithRange {
+  token: number
+  text: string
+  startIndex: number
+  endIndex: number
 }
 
 interface Model {
@@ -55,6 +63,21 @@ const MODELS: Model[] = [
 
 const PROVIDERS = Array.from(new Set(MODELS.map(m => m.provider)))
 
+const COLORS = [
+  'bg-blue-200 dark:bg-blue-900/40',
+  'bg-green-200 dark:bg-green-900/40',
+  'bg-yellow-200 dark:bg-yellow-900/40',
+  'bg-pink-200 dark:bg-pink-900/40',
+  'bg-purple-200 dark:bg-purple-900/40',
+  'bg-indigo-200 dark:bg-indigo-900/40',
+  'bg-red-200 dark:bg-red-900/40',
+  'bg-orange-200 dark:bg-orange-900/40',
+  'bg-teal-200 dark:bg-teal-900/40',
+  'bg-cyan-200 dark:bg-cyan-900/40',
+]
+
+const getColor = (index: number) => COLORS[index % COLORS.length]
+
 // 提取变量占位符
 const extractVariables = (text: string): string[] => {
   const regex = /\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g
@@ -76,14 +99,64 @@ const replaceVariables = (text: string, variables: Record<string, string>): stri
   return result
 }
 
+const STORAGE_KEY = 'token-calculator-cache'
+
 export function TokenCalculator() {
   const [input, setInput] = useState('')
   const [selectedModelId, setSelectedModelId] = useState<string>('gpt-4o')
   const [selectedProvider, setSelectedProvider] = useState<string>('全部')
   const [showAllModels, setShowAllModels] = useState(false)
   const [variableValues, setVariableValues] = useState<Record<string, string>>({})
+  const [showVisualization, setShowVisualization] = useState(true)
+  const [enableCache, setEnableCache] = useState(false)
 
   const selectedModel = MODELS.find(m => m.id === selectedModelId) || MODELS[0]
+
+  // 从 localStorage 加载缓存
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(STORAGE_KEY)
+      if (cached) {
+        const data = JSON.parse(cached)
+        if (data.enableCache) {
+          setInput(data.input || '')
+          setVariableValues(data.variableValues || {})
+          setEnableCache(true)
+        }
+      }
+    } catch {
+      // 忽略解析错误
+    }
+  }, [])
+
+  // 保存到 localStorage
+  useEffect(() => {
+    if (enableCache) {
+      try {
+        const data = {
+          input,
+          variableValues,
+          enableCache: true,
+          timestamp: Date.now()
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      } catch {
+        // 忽略存储错误
+      }
+    }
+  }, [input, variableValues, enableCache])
+
+  // 切换缓存时清理
+  const handleToggleCache = (enabled: boolean) => {
+    setEnableCache(enabled)
+    if (!enabled) {
+      try {
+        localStorage.removeItem(STORAGE_KEY)
+      } catch {
+        // 忽略清理错误
+      }
+    }
+  }
 
   // 提取变量
   const variables = useMemo(() => extractVariables(input), [input])
@@ -101,10 +174,10 @@ export function TokenCalculator() {
     return replaceVariables(input, variableValues)
   }, [input, variableValues])
 
-  // 计算 Token
-  const tokenInfo: TokenInfo = useMemo(() => {
+  // 计算 Token 和位置信息
+  const tokenInfo: TokenInfo & { tokens: TokenWithRange[] } = useMemo(() => {
     if (!finalText.trim()) {
-      return { tokenCount: 0, charCount: 0, avgTokensPerChar: 0 }
+      return { tokenCount: 0, charCount: 0, avgTokensPerChar: 0, tokens: [] }
     }
 
     try {
@@ -113,13 +186,38 @@ export function TokenCalculator() {
       const charCount = finalText.length
       const avgTokensPerChar = tokens.length / charCount
 
+      // 计算每个 token 的文本范围
+      const tokensWithRange: TokenWithRange[] = []
+      let currentIndex = 0
+
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i]
+        // 解码 token 获取文本
+        const decoded = encoding.decode([token])
+        const tokenText = decoded
+
+        // 在原文本中查找该 token 的位置
+        const startIndex = finalText.indexOf(tokenText, currentIndex)
+        const endIndex = startIndex + tokenText.length
+
+        tokensWithRange.push({
+          token,
+          text: tokenText,
+          startIndex,
+          endIndex,
+        })
+
+        currentIndex = endIndex
+      }
+
       return {
         tokenCount: tokens.length,
         charCount,
         avgTokensPerChar: Math.round(avgTokensPerChar * 100) / 100,
+        tokens: tokensWithRange,
       }
     } catch {
-      return { tokenCount: 0, charCount: finalText.length, avgTokensPerChar: 0 }
+      return { tokenCount: 0, charCount: finalText.length, avgTokensPerChar: 0, tokens: [] }
     }
   }, [finalText, selectedModel])
 
@@ -259,12 +357,26 @@ export function TokenCalculator() {
       {/* 计算结果 */}
       <Card className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/30 border-sky-200 dark:border-sky-800">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-sky-500" />
-            计算结果
+          <CardTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-sky-500" />
+              计算结果
+            </div>
+            <div className="flex items-center gap-2">
+              {showVisualization ? (
+                <Eye className="h-4 w-4 text-slate-500" />
+              ) : (
+                <EyeOff className="h-4 w-4 text-slate-500" />
+              )}
+              <span className="text-sm text-slate-600 dark:text-slate-400">Token 可视化</span>
+              <Switch
+                checked={showVisualization}
+                onCheckedChange={setShowVisualization}
+              />
+            </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-slate-900 rounded-xl p-5 text-center shadow-sm">
               <div className="text-4xl font-bold text-sky-600 dark:text-sky-400">
@@ -292,7 +404,35 @@ export function TokenCalculator() {
             </div>
           </div>
 
-
+          {/* Token 可视化 */}
+          {showVisualization && tokenInfo.tokens.length > 0 && (
+            <div className="mt-4">
+              <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                Token 可视化预览
+              </div>
+              <div className="bg-white dark:bg-slate-900 rounded-lg p-4 shadow-sm">
+                <div className="flex flex-wrap gap-1 font-mono text-sm">
+                  {tokenInfo.tokens.map((tokenData, index) => (
+                    <div
+                      key={index}
+                      className={`${getColor(index)} rounded px-2 py-1 transition-all hover:opacity-80`}
+                      title={`Token #${index + 1}: ${tokenData.text}`}
+                    >
+                      <span className="text-xs text-slate-500 dark:text-slate-400 mr-1">
+                        #{index + 1}
+                      </span>
+                      <span className="text-slate-700 dark:text-slate-300">
+                        {tokenData.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+                  共 {tokenInfo.tokens.length} 个 Token，每个颜色代表一个 Token
+                </div>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -323,6 +463,7 @@ export function TokenCalculator() {
                       <p className="whitespace-nowrap">• 不同模型使用不同分词器，结果略有差异</p>
                       <p className="whitespace-nowrap">• 使用 js-tiktoken 库，与 OpenAI API 基本一致</p>
                       <p className="whitespace-nowrap">• 非 OpenAI 模型使用相近编码估算</p>
+                      <p className="whitespace-nowrap">• 开启可视化可查看每个 Token 的边界</p>
                     </div>
                     <div className="absolute top-0 left-4 -translate-y-1/2 rotate-45 w-2.5 h-2.5 bg-white dark:bg-slate-800 border-t border-l border-slate-200 dark:border-slate-700"></div>
                   </div>
@@ -333,6 +474,16 @@ export function TokenCalculator() {
               <span className="text-sm px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300">
                 {selectedModel.name}
               </span>
+              <div className="flex items-center gap-2">
+                <Save className="h-4 w-4 text-slate-500" />
+                <span className="text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                  记住输入
+                </span>
+                <Switch
+                  checked={enableCache}
+                  onCheckedChange={handleToggleCache}
+                />
+              </div>
                   <Button
                 variant="outline"
                 size="sm"
@@ -422,10 +573,11 @@ export function TokenCalculator() {
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
                 <p>• <strong>变量填充</strong>：使用 {'{变量名}'} 作为占位符，系统自动生成输入框。</p>
-                <p>• Token 是大语言模型处理文本的基本单位，1 Token ≈ 4 英文字符或 0.75 汉字。</p>
+                <p>• Token 是大语言模型处理文本的基本单位，1 Token ≈ 4 英文字符或 0.75 个汉字。</p>
                 <p>• 不同模型使用不同分词器，Token 数量可能略有差异。</p>
                 <p>• 使用 js-tiktoken 库计算，结果与 OpenAI API 基本一致。</p>
                 <p>• 非 OpenAI 模型使用相近编码估算，结果仅供参考。</p>
+                <p>• 开启可视化可查看每个 Token 的边界和内容。</p>
               </div>
               <div className="absolute bottom-0 right-6 translate-y-1/2 rotate-45 w-3 h-3 bg-white dark:bg-slate-800 border-r border-b border-slate-200 dark:border-slate-700"></div>
             </div>

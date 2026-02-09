@@ -3,6 +3,7 @@ import {
   Code2, 
   Hash, 
   Link2, 
+  ArrowRightLeft,
   Clock, 
   KeySquare,
   Home,
@@ -47,6 +48,7 @@ const menuGroups = [
     tools: [
       { path: '/base64', name: 'Base64 编解码', icon: Hash },
       { path: '/url-encoder', name: 'URL 编解码', icon: Link2 },
+      { path: '/json-yaml-converter', name: 'JSON/YAML 转换', icon: ArrowRightLeft },
     ]
   },
   {
@@ -74,6 +76,7 @@ const menuGroups = [
       { path: '/uuid', name: 'UUID 生成', icon: KeySquare },
       { path: '/password-generator', name: '密码生成', icon: RefreshCw },
       { path: '/qr-generator', name: '二维码生成', icon: QrCode },
+      { path: '/cron-generator', name: 'Cron 生成', icon: Clock },
     ]
   },
   {
