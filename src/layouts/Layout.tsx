@@ -133,6 +133,7 @@ export function Layout() {
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
+  const [favoritesOpen, setFavoritesOpen] = useState(true)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const location = useLocation()
 
@@ -145,11 +146,20 @@ export function Layout() {
         console.error('Failed to load favorites:', e)
       }
     }
+
+    const savedFavoritesOpen = localStorage.getItem('favoritesOpen')
+    if (savedFavoritesOpen !== null) {
+      setFavoritesOpen(savedFavoritesOpen === 'true')
+    }
   }, [])
 
   useEffect(() => {
     localStorage.setItem('favoriteTools', JSON.stringify(Array.from(favorites)))
   }, [favorites])
+
+  useEffect(() => {
+    localStorage.setItem('favoritesOpen', String(favoritesOpen))
+  }, [favoritesOpen])
 
   const isToolActive = (path: string) => location.pathname === path
   const isGroupActive = (group: typeof menuGroups[0]) =>
@@ -305,39 +315,48 @@ export function Layout() {
 
             {!sidebarCollapsed && !searchQuery && favoriteTools.length > 0 && (
               <div className="mb-4">
-                <div className="flex items-center space-x-2 px-3 py-2 mb-2">
-                  <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">我的收藏</span>
-                </div>
-                <div className="space-y-0.5">
-                  {favoriteTools.map((tool) => {
-                    const ToolIcon = tool.icon
-                    return (
-                      <Link
-                        key={tool.path}
-                        to={tool.path}
-                        className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                          isToolActive(tool.path)
-                            ? 'bg-gradient-to-r from-amber-100 to-amber-200 dark:from-amber-500/20 dark:to-amber-600/20 text-amber-800 dark:text-amber-200 shadow-sm'
-                            : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-amber-700 dark:hover:text-amber-200'
-                        }`}
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        <div className="flex items-center space-x-2.5 overflow-hidden">
-                          <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{tool.name}</span>
-                        </div>
-                        <button
-                          onClick={(e) => toggleFavorite(tool.path, e)}
-                          className="shrink-0 p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
-                          title="取消收藏"
+                <button
+                  onClick={() => setFavoritesOpen(!favoritesOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 mb-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 rounded-lg group/favorite"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
+                    <span className="text-xs font-semibold">我的收藏</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">({favoriteTools.length})</span>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${favoritesOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {favoritesOpen && (
+                  <div className="space-y-0.5">
+                    {favoriteTools.map((tool) => {
+                      const ToolIcon = tool.icon
+                      return (
+                        <Link
+                          key={tool.path}
+                          to={tool.path}
+                          className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                            isToolActive(tool.path)
+                              ? 'bg-gradient-to-r from-amber-100 to-amber-200 dark:from-amber-500/20 dark:to-amber-600/20 text-amber-800 dark:text-amber-200 shadow-sm'
+                              : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-amber-700 dark:hover:text-amber-200'
+                          }`}
+                          onClick={() => setSidebarOpen(false)}
                         >
-                          <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
-                        </button>
-                      </Link>
-                    )
-                  })}
-                </div>
+                          <div className="flex items-center space-x-2.5 overflow-hidden">
+                            <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{tool.name}</span>
+                          </div>
+                          <button
+                            onClick={(e) => toggleFavorite(tool.path, e)}
+                            className="shrink-0 p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                            title="取消收藏"
+                          >
+                            <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                          </button>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
