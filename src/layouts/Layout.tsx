@@ -27,7 +27,9 @@ import {
   Phone,
   MapPin,
   PhoneCall,
-  BrainCircuit
+  BrainCircuit,
+  Search,
+  X
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -127,12 +129,22 @@ export function Layout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const location = useLocation()
 
   const isToolActive = (path: string) => location.pathname === path
-  const isGroupActive = (group: typeof menuGroups[0]) => 
+  const isGroupActive = (group: typeof menuGroups[0]) =>
     group.tools.some(tool => isToolActive(tool.path))
+
+  const filteredMenuGroups = searchQuery
+    ? menuGroups.map(group => ({
+        ...group,
+        tools: group.tools.filter(tool =>
+          tool.name.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      })).filter(group => group.tools.length > 0)
+    : menuGroups
 
   const [openGroups, setOpenGroups] = useState<Set<string>>(new Set())
   const previousPathRef = useRef('/')
@@ -234,11 +246,32 @@ export function Layout() {
               {!sidebarCollapsed && <span className="font-semibold">首页</span>}
             </Link>
 
+            {!sidebarCollapsed && (
+              <div className="mb-3 relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                <input
+                  type="text"
+                  placeholder="搜索工具..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
 
-            {menuGroups.map((group) => {
+            {filteredMenuGroups.map((group) => {
               const GroupIcon = group.icon
-              const isOpen = openGroups.has(group.name) || isGroupActive(group)
+              const isOpen = searchQuery ? true : openGroups.has(group.name) || isGroupActive(group)
               
               return (
                 <div 
@@ -247,18 +280,20 @@ export function Layout() {
                 >
                   {!sidebarCollapsed ? (
                     <>
-                      <button
-                        onClick={() => toggleGroup(group.name)}
-                        className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 group/header"
-                      >
-                        <div className="flex items-center space-x-3 overflow-hidden">
-                          <div className={`p-1.5 rounded-md transition-colors ${isOpen ? 'bg-gradient-to-br from-sky-300 to-blue-300 dark:from-sky-500 dark:to-blue-500 text-sky-700 dark:text-white' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover/header:bg-sky-100 dark:group-hover/header:bg-slate-700/50 group-hover/header:text-sky-600 dark:group-hover/header:text-slate-300'}`}>
-                            <GroupIcon className="h-3.5 w-3.5 shrink-0" />
+                      {!searchQuery && (
+                        <button
+                          onClick={() => toggleGroup(group.name)}
+                          className="w-full flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 group/header"
+                        >
+                          <div className="flex items-center space-x-3 overflow-hidden">
+                            <div className={`p-1.5 rounded-md transition-colors ${isOpen ? 'bg-gradient-to-br from-sky-300 to-blue-300 dark:from-sky-500 dark:to-blue-500 text-sky-700 dark:text-white' : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 group-hover/header:bg-sky-100 dark:group-hover/header:bg-slate-700/50 group-hover/header:text-sky-600 dark:group-hover/header:text-slate-300'}`}>
+                              <GroupIcon className="h-3.5 w-3.5 shrink-0" />
+                            </div>
+                            <span className="font-semibold">{group.name}</span>
                           </div>
-                          <span className="font-semibold">{group.name}</span>
-                        </div>
-                        <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${isOpen ? 'rotate-180' : ''}`} />
-                      </button>
+                          <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
                       
                       {isOpen && (
                         <div className="ml-2 mt-1.5 space-y-0.5 pl-2 border-l-2 border-slate-200 dark:border-slate-700">
@@ -353,6 +388,15 @@ export function Layout() {
                 </div>
               )
             })}
+
+            {searchQuery && filteredMenuGroups.length === 0 && (
+              <div className="text-center py-8 px-4">
+                <FileSearch className="h-10 w-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+                <p className="text-sm text-slate-500 dark:text-slate-400">未找到相关工具</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">试试其他关键词</p>
+              </div>
+            )}
+
             </div>
           </nav>
 
