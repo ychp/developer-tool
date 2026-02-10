@@ -1,36 +1,67 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './index.css'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Layout } from './layouts/Layout'
 import { Home } from './pages/Home'
-import { JsonFormatter } from './tools/JsonFormatter'
-import { Base64 } from './tools/Base64'
-import { UrlEncoder } from './tools/UrlEncoder'
-import { Timestamp } from './tools/Timestamp'
-import { UUID } from './tools/UUID'
-import { RegexTester } from './tools/RegexTester'
-import { DiffChecker } from './tools/DiffChecker'
-import { HashGenerator } from './tools/HashGenerator'
-import { XmlFormatter } from './tools/XmlFormatter'
-import { PasswordGenerator } from './tools/PasswordGenerator'
-import { ColorConverter } from './tools/ColorConverter'
-import { QrCodeGenerator } from './tools/QrCodeGenerator'
-import { NumberConverter } from './tools/NumberConverter'
-import { JwtDecoder } from './tools/JwtDecoder'
-import { StringJoinAndSplit } from './tools/StringJoinAndSplit'
-import { ImageLinkPreview } from './tools/ImageLinkPreview'
-import { ChromeExtensions } from './tools/ChromeExtensions'
-import { TableViewer } from './tools/TableViewer'
-import { PhoneNumber } from './tools/PhoneNumber'
-import { PostalCode } from './tools/PostalCode'
-import { AreaCode } from './tools/AreaCode'
-import { TokenCalculator } from './tools/TokenCalculator'
-import { CronGenerator } from './tools/CronGenerator'
-import { JsonYamlConverter } from './tools/JsonYamlConverter'
-import { ImageBase64 } from './tools/ImageBase64'
-import { CodeFormatter } from './tools/CodeFormatter'
+import { PageLoading } from './components/ui/loading'
+
+const JsonFormatter = lazy(() => import('./tools/JsonFormatter').then(m => ({ default: m.JsonFormatter })))
+const XmlFormatter = lazy(() => import('./tools/XmlFormatter').then(m => ({ default: m.XmlFormatter })))
+const Base64 = lazy(() => import('./tools/Base64').then(m => ({ default: m.Base64 })))
+const UrlEncoder = lazy(() => import('./tools/UrlEncoder').then(m => ({ default: m.UrlEncoder })))
+const Timestamp = lazy(() => import('./tools/Timestamp').then(m => ({ default: m.Timestamp })))
+const UUID = lazy(() => import('./tools/UUID').then(m => ({ default: m.UUID })))
+const RegexTester = lazy(() => import('./tools/RegexTester').then(m => ({ default: m.RegexTester })))
+const DiffChecker = lazy(() => import('./tools/DiffChecker').then(m => ({ default: m.DiffChecker })))
+const HashGenerator = lazy(() => import('./tools/HashGenerator').then(m => ({ default: m.HashGenerator })))
+const PasswordGenerator = lazy(() => import('./tools/PasswordGenerator').then(m => ({ default: m.PasswordGenerator })))
+const ColorConverter = lazy(() => import('./tools/ColorConverter').then(m => ({ default: m.ColorConverter })))
+const QrCodeGenerator = lazy(() => import('./tools/QrCodeGenerator').then(m => ({ default: m.QrCodeGenerator })))
+const NumberConverter = lazy(() => import('./tools/NumberConverter').then(m => ({ default: m.NumberConverter })))
+const JwtDecoder = lazy(() => import('./tools/JwtDecoder').then(m => ({ default: m.JwtDecoder })))
+const StringJoinAndSplit = lazy(() => import('./tools/StringJoinAndSplit').then(m => ({ default: m.StringJoinAndSplit })))
+const ImageLinkPreview = lazy(() => import('./tools/ImageLinkPreview').then(m => ({ default: m.ImageLinkPreview })))
+const ChromeExtensions = lazy(() => import('./tools/ChromeExtensions').then(m => ({ default: m.ChromeExtensions })))
+const TableViewer = lazy(() => import('./tools/TableViewer').then(m => ({ default: m.TableViewer })))
+const PhoneNumber = lazy(() => import('./tools/PhoneNumber').then(m => ({ default: m.PhoneNumber })))
+const PostalCode = lazy(() => import('./tools/PostalCode').then(m => ({ default: m.PostalCode })))
+const AreaCode = lazy(() => import('./tools/AreaCode').then(m => ({ default: m.AreaCode })))
+const TokenCalculator = lazy(() => import('./tools/TokenCalculator').then(m => ({ default: m.TokenCalculator })))
+const CronGenerator = lazy(() => import('./tools/CronGenerator').then(m => ({ default: m.CronGenerator })))
+const JsonYamlConverter = lazy(() => import('./tools/JsonYamlConverter').then(m => ({ default: m.JsonYamlConverter })))
+const ImageBase64 = lazy(() => import('./tools/ImageBase64').then(m => ({ default: m.ImageBase64 })))
+const CodeFormatter = lazy(() => import('./tools/CodeFormatter').then(m => ({ default: m.CodeFormatter })))
+
+const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
+  { path: 'json-formatter', Component: JsonFormatter },
+  { path: 'xml-formatter', Component: XmlFormatter },
+  { path: 'base64', Component: Base64 },
+  { path: 'url-encoder', Component: UrlEncoder },
+  { path: 'timestamp', Component: Timestamp },
+  { path: 'uuid', Component: UUID },
+  { path: 'regex-tester', Component: RegexTester },
+  { path: 'diff-checker', Component: DiffChecker },
+  { path: 'hash-generator', Component: HashGenerator },
+  { path: 'password-generator', Component: PasswordGenerator },
+  { path: 'color-converter', Component: ColorConverter },
+  { path: 'qr-generator', Component: QrCodeGenerator },
+  { path: 'number-converter', Component: NumberConverter },
+  { path: 'jwt-decoder', Component: JwtDecoder },
+  { path: 'string-join-split', Component: StringJoinAndSplit },
+  { path: 'image-link-preview', Component: ImageLinkPreview },
+  { path: 'chrome-extensions', Component: ChromeExtensions },
+  { path: 'table-viewer', Component: TableViewer },
+  { path: 'phone-number', Component: PhoneNumber },
+  { path: 'postal-code', Component: PostalCode },
+  { path: 'area-code', Component: AreaCode },
+  { path: 'token-calculator', Component: TokenCalculator },
+  { path: 'cron-generator', Component: CronGenerator },
+  { path: 'json-yaml-converter', Component: JsonYamlConverter },
+  { path: 'image-base64', Component: ImageBase64 },
+  { path: 'code-formatter', Component: CodeFormatter },
+]
 
 const router = createBrowserRouter([
   {
@@ -38,32 +69,14 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Home /> },
-      { path: 'json-formatter', element: <JsonFormatter /> },
-      { path: 'xml-formatter', element: <XmlFormatter /> },
-      { path: 'base64', element: <Base64 /> },
-      { path: 'url-encoder', element: <UrlEncoder /> },
-      { path: 'string-join-split', element: <StringJoinAndSplit /> },
-      { path: 'image-link-preview', element: <ImageLinkPreview /> },
-      { path: 'table-viewer', element: <TableViewer /> },
-      { path: 'chrome-extensions', element: <ChromeExtensions /> },
-      { path: 'timestamp', element: <Timestamp /> },
-      { path: 'uuid', element: <UUID /> },
-      { path: 'regex-tester', element: <RegexTester /> },
-      { path: 'diff-checker', element: <DiffChecker /> },
-      { path: 'hash-generator', element: <HashGenerator /> },
-      { path: 'password-generator', element: <PasswordGenerator /> },
-      { path: 'color-converter', element: <ColorConverter /> },
-      { path: 'qr-generator', element: <QrCodeGenerator /> },
-      { path: 'number-converter', element: <NumberConverter /> },
-      { path: 'jwt-decoder', element: <JwtDecoder /> },
-      { path: 'phone-number', element: <PhoneNumber /> },
-      { path: 'postal-code', element: <PostalCode /> },
-      { path: 'area-code', element: <AreaCode /> },
-      { path: 'token-calculator', element: <TokenCalculator /> },
-      { path: 'cron-generator', element: <CronGenerator /> },
-      { path: 'json-yaml-converter', element: <JsonYamlConverter /> },
-      { path: 'image-base64', element: <ImageBase64 /> },
-      { path: 'code-formatter', element: <CodeFormatter /> },
+      ...lazyRoutes.map(({ path, Component }) => ({
+        path,
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <Component />
+          </Suspense>
+        ),
+      })),
     ],
   },
 ])
