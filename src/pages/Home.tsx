@@ -199,6 +199,20 @@ const tools = [
     category: '编码转换',
     gradient: 'from-teal-500 to-cyan-600'
   },
+  {
+    path: '/image-base64',
+    name: '图片 Base64',
+    icon: ImageIcon,
+    category: '编码转换',
+    gradient: 'from-violet-500 to-purple-600'
+  },
+  {
+    path: '/code-formatter',
+    name: '代码格式化',
+    icon: Code2,
+    category: '格式化',
+    gradient: 'from-indigo-500 to-purple-600'
+  },
 ]
 
 const categories = Array.from(new Set(tools.map(t => t.category)))

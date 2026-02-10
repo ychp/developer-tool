@@ -29,6 +29,8 @@ import { AreaCode } from './tools/AreaCode'
 import { TokenCalculator } from './tools/TokenCalculator'
 import { CronGenerator } from './tools/CronGenerator'
 import { JsonYamlConverter } from './tools/JsonYamlConverter'
+import { ImageBase64 } from './tools/ImageBase64'
+import { CodeFormatter } from './tools/CodeFormatter'
 
 const router = createBrowserRouter([
   {
@@ -60,6 +62,8 @@ const router = createBrowserRouter([
       { path: 'token-calculator', element: <TokenCalculator /> },
       { path: 'cron-generator', element: <CronGenerator /> },
       { path: 'json-yaml-converter', element: <JsonYamlConverter /> },
+      { path: 'image-base64', element: <ImageBase64 /> },
+      { path: 'code-formatter', element: <CodeFormatter /> },
     ],
   },
 ])
