@@ -29,7 +29,9 @@ import {
   PhoneCall,
   BrainCircuit,
   Search,
-  X
+  X,
+  Star,
+  StarOff
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -130,8 +132,24 @@ export function Layout() {
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const location = useLocation()
+
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favoriteTools')
+    if (savedFavorites) {
+      try {
+        setFavorites(new Set(JSON.parse(savedFavorites)))
+      } catch (e) {
+        console.error('Failed to load favorites:', e)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('favoriteTools', JSON.stringify(Array.from(favorites)))
+  }, [favorites])
 
   const isToolActive = (path: string) => location.pathname === path
   const isGroupActive = (group: typeof menuGroups[0]) =>
@@ -188,6 +206,24 @@ export function Layout() {
       setOpenGroups(new Set([groupName]))
     }
   }
+
+  const toggleFavorite = (toolPath: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setFavorites(prev => {
+      const newFavorites = new Set(prev)
+      if (newFavorites.has(toolPath)) {
+        newFavorites.delete(toolPath)
+      } else {
+        newFavorites.add(toolPath)
+      }
+      return newFavorites
+    })
+  }
+
+  const favoriteTools = menuGroups.flatMap(group =>
+    group.tools.filter(tool => favorites.has(tool.path))
+  )
 
   return (
     <div className="h-screen flex flex-col overflow-hidden relative z-10">
@@ -267,6 +303,44 @@ export function Layout() {
               </div>
             )}
 
+            {!sidebarCollapsed && !searchQuery && favoriteTools.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center space-x-2 px-3 py-2 mb-2">
+                  <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
+                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">我的收藏</span>
+                </div>
+                <div className="space-y-0.5">
+                  {favoriteTools.map((tool) => {
+                    const ToolIcon = tool.icon
+                    return (
+                      <Link
+                        key={tool.path}
+                        to={tool.path}
+                        className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                          isToolActive(tool.path)
+                            ? 'bg-gradient-to-r from-amber-100 to-amber-200 dark:from-amber-500/20 dark:to-amber-600/20 text-amber-800 dark:text-amber-200 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-amber-700 dark:hover:text-amber-200'
+                        }`}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <div className="flex items-center space-x-2.5 overflow-hidden">
+                          <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{tool.name}</span>
+                        </div>
+                        <button
+                          onClick={(e) => toggleFavorite(tool.path, e)}
+                          className="shrink-0 p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                          title="取消收藏"
+                        >
+                          <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                        </button>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
             <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
 
             {filteredMenuGroups.map((group) => {
@@ -300,20 +374,39 @@ export function Layout() {
                           {group.tools.map((tool) => {
                             const ToolIcon = tool.icon
                             return (
-                              <Link
+                              <div
                                 key={tool.path}
-                                to={tool.path}
-                                className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                                  isToolActive(tool.path)
-                                    ? 'bg-gradient-to-r from-sky-200 to-blue-200 dark:from-sky-500/30 dark:to-blue-500/30 text-sky-800 dark:text-slate-200 shadow-sm -ml-2'
-                                    : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-sky-700 dark:hover:text-slate-200 hover:-ml-2'
-                                }`}
-                                onClick={() => setSidebarOpen(false)}
-                                title={tool.name}
+                                className="relative group/tool"
                               >
-                                <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                                <span className="truncate">{tool.name}</span>
-                              </Link>
+                                <Link
+                                  to={tool.path}
+                                  className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                                    isToolActive(tool.path)
+                                      ? 'bg-gradient-to-r from-sky-200 to-blue-200 dark:from-sky-500/30 dark:to-blue-500/30 text-sky-800 dark:text-slate-200 shadow-sm -ml-2 pr-8'
+                                      : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-sky-700 dark:hover:text-slate-200 hover:-ml-2 pr-8'
+                                  }`}
+                                  onClick={() => setSidebarOpen(false)}
+                                  title={tool.name}
+                                >
+                                  <div className="flex items-center space-x-2.5 overflow-hidden">
+                                    <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                                    <span className="truncate">{tool.name}</span>
+                                  </div>
+                                </Link>
+                                <button
+                                  onClick={(e) => toggleFavorite(tool.path, e)}
+                                  className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/tool:opacity-100 transition-all ${
+                                    favorites.has(tool.path) ? 'opacity-100' : ''
+                                  } hover:bg-amber-100 dark:hover:bg-amber-900/30`}
+                                  title={favorites.has(tool.path) ? '取消收藏' : '收藏'}
+                                >
+                                  {favorites.has(tool.path) ? (
+                                    <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                                  ) : (
+                                    <StarOff className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                                  )}
+                                </button>
+                              </div>
                             )
                           })}
                         </div>
@@ -362,22 +455,41 @@ export function Layout() {
                             {group.tools.map((tool) => {
                               const ToolIcon = tool.icon
                               return (
-                                <Link
-                                  key={tool.path}
-                                  to={tool.path}
-                                  className={`flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                                    isToolActive(tool.path)
-                                      ? 'bg-accent text-accent-foreground'
-                                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                                  }`}
-                                  onClick={() => {
-                                    setSidebarOpen(false)
-                                    setHoveredGroup(null)
-                                  }}
-                                >
-                                  <ToolIcon className="h-4 w-4 shrink-0" />
-                                  <span>{tool.name}</span>
-                                </Link>
+                                <div key={tool.path} className="relative group/tool-popup">
+                                  <Link
+                                    to={tool.path}
+                                    className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                                      isToolActive(tool.path)
+                                        ? 'bg-accent text-accent-foreground'
+                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                                    }`}
+                                    onClick={() => {
+                                      setSidebarOpen(false)
+                                      setHoveredGroup(null)
+                                    }}
+                                  >
+                                    <div className="flex items-center space-x-2 overflow-hidden">
+                                      <ToolIcon className="h-4 w-4 shrink-0" />
+                                      <span className="truncate">{tool.name}</span>
+                                    </div>
+                                  </Link>
+                                  <button
+                                    onClick={(e) => {
+                                      toggleFavorite(tool.path, e)
+                                      setHoveredGroup(null)
+                                    }}
+                                    className={`absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/tool-popup:opacity-100 transition-all ${
+                                      favorites.has(tool.path) ? 'opacity-100' : ''
+                                    } hover:bg-amber-100 dark:hover:bg-amber-900/30`}
+                                    title={favorites.has(tool.path) ? '取消收藏' : '收藏'}
+                                  >
+                                    {favorites.has(tool.path) ? (
+                                      <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                                    ) : (
+                                      <StarOff className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                                    )}
+                                  </button>
+                                </div>
                               )
                             })}
                           </div>
