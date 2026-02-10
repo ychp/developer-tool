@@ -360,45 +360,46 @@ export function Layout() {
             )}
 
             {!sidebarCollapsed && !searchQuery && favoriteTools.length > 0 && (
-              <div className="mb-4">
-                <button
-                  onClick={() => setFavoritesOpen(!favoritesOpen)}
-                  className="w-full flex items-center justify-between px-3 py-2 mb-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 rounded-lg group/favorite"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
-                    <span className="text-xs font-semibold">我的收藏</span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">({favoriteTools.length})</span>
+              <div className="mb-5">
+                <div className="flex items-center gap-2 px-2 mb-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-amber-100 dark:bg-amber-900/30">
+                    <Star className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
                   </div>
-                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${favoritesOpen ? 'rotate-180' : ''}`} />
-                </button>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">我的收藏</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">{favoriteTools.length}</span>
+                  <button
+                    onClick={() => setFavoritesOpen(!favoritesOpen)}
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                  >
+                    <ChevronDown className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${favoritesOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
                 {favoritesOpen && (
-                  <div className="space-y-0.5">
+                  <div className="space-y-1 pl-1">
                     {favoriteTools.map((tool) => {
                       const ToolIcon = tool.icon
                       return (
-                        <Link
-                          key={tool.path}
-                          to={tool.path}
-                          className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                            isToolActive(tool.path)
-                              ? 'bg-gradient-to-r from-amber-100 to-amber-200 dark:from-amber-500/20 dark:to-amber-600/20 text-amber-800 dark:text-amber-200 shadow-sm'
-                              : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-100 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-amber-700 dark:hover:text-amber-200'
-                          }`}
-                          onClick={() => setSidebarOpen(false)}
-                        >
-                          <div className="flex items-center space-x-2.5 overflow-hidden">
-                            <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                            <span className="truncate">{tool.name}</span>
-                          </div>
+                        <div key={tool.path} className="relative group/fav-tool">
+                          <Link
+                            to={tool.path}
+                            className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-all duration-200 ${
+                              isToolActive(tool.path)
+                                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-medium'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-200'
+                            }`}
+                            onClick={() => setSidebarOpen(false)}
+                          >
+                            <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
+                            <span className="truncate flex-1">{tool.name}</span>
+                          </Link>
                           <button
                             onClick={(e) => toggleFavorite(tool.path, e)}
-                            className="shrink-0 p-0.5 rounded hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/fav-tool:opacity-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all"
                             title="取消收藏"
                           >
                             <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
                           </button>
-                        </Link>
+                        </div>
                       )
                     })}
                   </div>
@@ -407,20 +408,22 @@ export function Layout() {
             )}
 
             {!sidebarCollapsed && !searchQuery && recentToolsList.length > 0 && (
-              <div className="mb-4">
-                <button
-                  onClick={() => setRecentOpen(!recentOpen)}
-                  className="w-full flex items-center justify-between px-3 py-2 mb-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 rounded-lg group/recent"
-                >
-                  <div className="flex items-center space-x-2">
+              <div className="mb-5">
+                <div className="flex items-center gap-2 px-2 mb-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-900/30">
                     <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-xs font-semibold">最近使用</span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">({recentToolsList.length})</span>
                   </div>
-                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${recentOpen ? 'rotate-180' : ''}`} />
-                </button>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">最近使用</span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">{recentToolsList.length}</span>
+                  <button
+                    onClick={() => setRecentOpen(!recentOpen)}
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                  >
+                    <ChevronDown className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${recentOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                </div>
                 {recentOpen && (
-                  <div className="space-y-0.5">
+                  <div className="space-y-1 pl-1">
                     {recentToolsList.map((tool) => {
                       if (!tool) return null
                       const ToolIcon = tool.icon
@@ -428,24 +431,22 @@ export function Layout() {
                         <div key={tool.path} className="relative group/recent-tool">
                           <Link
                             to={tool.path}
-                            className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 pr-8 ${
+                            className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-all duration-200 ${
                               isToolActive(tool.path)
-                                ? 'bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-500/20 dark:to-teal-500/20 text-emerald-800 dark:text-emerald-200 shadow-sm'
-                                : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-emerald-700 dark:hover:text-emerald-200'
+                                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 font-medium'
+                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-200'
                             }`}
                             onClick={() => setSidebarOpen(false)}
                           >
-                            <div className="flex items-center space-x-2.5 overflow-hidden">
-                              <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                              <span className="truncate">{tool.name}</span>
-                            </div>
+                            <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
+                            <span className="truncate flex-1">{tool.name}</span>
                           </Link>
                           <button
                             onClick={(e) => removeFromRecent(tool.path, e)}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/recent-tool:opacity-100 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-900/30"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/recent-tool:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
                             title="从历史记录中删除"
                           >
-                            <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                            <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300" />
                           </button>
                         </div>
                       )
