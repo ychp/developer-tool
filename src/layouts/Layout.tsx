@@ -36,6 +36,7 @@ import {
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
+import { PWAInstallPrompt } from '../components/ui/PWAInstallPrompt'
 import { useState, useRef, useEffect, useCallback } from 'react'
 
 const menuGroups = [
@@ -814,6 +815,7 @@ export function Layout() {
           </div>
         </main>
       </div>
+      <PWAInstallPrompt />
     </div>
   )
 }
