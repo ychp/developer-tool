@@ -28,6 +28,7 @@ import {
   MapPin,
   PhoneCall,
   BrainCircuit,
+  Sparkles,
   Search,
   X,
   Star,
@@ -77,7 +78,7 @@ const menuGroups = [
   },
   {
     name: '生成器',
-    icon: KeySquare,
+    icon: Sparkles,
     tools: [
       { path: '/uuid', name: 'UUID 生成', icon: KeySquare },
       { path: '/password-generator', name: '密码生成', icon: RefreshCw },
@@ -121,7 +122,7 @@ const menuGroups = [
     name: 'AI 工具',
     icon: BrainCircuit,
     tools: [
-      { path: '/token-calculator', name: 'Token 计算器', icon: Calculator },
+      { path: '/token-calculator', name: 'Token 计算器', icon: BrainCircuit },
     ]
   },
 ]
