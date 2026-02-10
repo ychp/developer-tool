@@ -7,6 +7,7 @@ import { Layout } from './layouts/Layout'
 import { Home } from './pages/Home'
 import { ToolSkeleton } from './components/ui/tool-skeleton'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import './pwa'
 
 const JsonFormatter = lazy(() => import('./tools/JsonFormatter').then(m => ({ default: m.JsonFormatter })))
 const XmlFormatter = lazy(() => import('./tools/XmlFormatter').then(m => ({ default: m.XmlFormatter })))
