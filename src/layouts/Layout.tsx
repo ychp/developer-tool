@@ -366,7 +366,10 @@ export function Layout() {
                 {favoriteTools.length > 0 && (
                   <div
                     className="relative"
-                    onMouseEnter={cancelClose}
+                    onMouseEnter={() => {
+                      cancelClose()
+                      setRecentOpen(false)
+                    }}
                     onMouseLeave={closePopup}
                   >
                     <button
@@ -385,6 +388,7 @@ export function Layout() {
                       <div
                         className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-lg overflow-hidden"
                         onMouseEnter={cancelClose}
+                        onMouseLeave={closePopup}
                       >
                         <div className="px-3 py-2.5 border-b border-amber-200 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30">
                           <div className="flex items-center gap-2">
@@ -433,7 +437,10 @@ export function Layout() {
                 {recentToolsList.length > 0 && (
                   <div
                     className="relative"
-                    onMouseEnter={cancelClose}
+                    onMouseEnter={() => {
+                      cancelClose()
+                      setFavoritesOpen(false)
+                    }}
                     onMouseLeave={closePopup}
                   >
                     <button
@@ -452,6 +459,7 @@ export function Layout() {
                       <div
                         className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 shadow-lg overflow-hidden"
                         onMouseEnter={cancelClose}
+                        onMouseLeave={closePopup}
                       >
                         <div className="px-3 py-2.5 border-b border-emerald-200 dark:border-emerald-900/50 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30">
                           <div className="flex items-center gap-2">
