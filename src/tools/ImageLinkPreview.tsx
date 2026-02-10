@@ -23,11 +23,11 @@ export function ImageLinkPreview() {
 
   const loadDemo = () => {
     const demoImages = [
-      'https://placehold.co/400x300/e2e8f0/1e293b?text=Image+1',
-      'https://placehold.co/400x300/93c5fd/1e3a8a?text=Image+2',
-      'https://placehold.co/400x300/86efac/14532d?text=Image+3',
-      'https://placehold.co/400x300/fcd34d/78350f?text=Image+4',
-      'https://placehold.co/400x300/f9a8d4/831843?text=Image+5'
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=400&h=300&fit=crop'
     ]
     setInputText(demoImages.join('\n'))
     setImageLinks(demoImages.map((url) => ({ url })))
