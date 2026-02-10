@@ -5,7 +5,8 @@ import './index.css'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Layout } from './layouts/Layout'
 import { Home } from './pages/Home'
-import { PageLoading } from './components/ui/loading'
+import { ToolSkeleton } from './components/ui/tool-skeleton'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
 
 const JsonFormatter = lazy(() => import('./tools/JsonFormatter').then(m => ({ default: m.JsonFormatter })))
 const XmlFormatter = lazy(() => import('./tools/XmlFormatter').then(m => ({ default: m.XmlFormatter })))
@@ -72,9 +73,11 @@ const router = createBrowserRouter([
       ...lazyRoutes.map(({ path, Component }) => ({
         path,
         element: (
-          <Suspense fallback={<PageLoading />}>
-            <Component />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<ToolSkeleton />}>
+              <Component />
+            </Suspense>
+          </ErrorBoundary>
         ),
       })),
     ],
