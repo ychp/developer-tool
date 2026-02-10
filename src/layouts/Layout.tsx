@@ -267,6 +267,12 @@ export function Layout() {
     })
   }
 
+  const removeFromRecent = (toolPath: string, e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setRecentTools(prev => prev.filter(path => path !== toolPath))
+  }
+
   const favoriteTools = menuGroups.flatMap(group =>
     group.tools.filter(tool => favorites.has(tool.path))
   )
@@ -419,19 +425,29 @@ export function Layout() {
                       if (!tool) return null
                       const ToolIcon = tool.icon
                       return (
-                        <Link
-                          key={tool.path}
-                          to={tool.path}
-                          className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                            isToolActive(tool.path)
-                              ? 'bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-500/20 dark:to-teal-500/20 text-emerald-800 dark:text-emerald-200 shadow-sm'
-                              : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-emerald-700 dark:hover:text-emerald-200'
-                          }`}
-                          onClick={() => setSidebarOpen(false)}
-                        >
-                          <ToolIcon className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate">{tool.name}</span>
-                        </Link>
+                        <div key={tool.path} className="relative group/recent-tool">
+                          <Link
+                            to={tool.path}
+                            className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 pr-8 ${
+                              isToolActive(tool.path)
+                                ? 'bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-500/20 dark:to-teal-500/20 text-emerald-800 dark:text-emerald-200 shadow-sm'
+                                : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-emerald-700 dark:hover:text-emerald-200'
+                            }`}
+                            onClick={() => setSidebarOpen(false)}
+                          >
+                            <div className="flex items-center space-x-2.5 overflow-hidden">
+                              <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{tool.name}</span>
+                            </div>
+                          </Link>
+                          <button
+                            onClick={(e) => removeFromRecent(tool.path, e)}
+                            className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/recent-tool:opacity-100 transition-all hover:bg-emerald-100 dark:hover:bg-emerald-900/30"
+                            title="从历史记录中删除"
+                          >
+                            <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                          </button>
+                        </div>
                       )
                     })}
                   </div>
