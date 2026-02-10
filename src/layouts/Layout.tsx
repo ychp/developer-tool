@@ -181,9 +181,9 @@ export function Layout() {
     const currentPath = location.pathname
     const previousPath = previousPathRef.current
 
-    if (currentPath === '/' && previousPath !== '/') {
+    if (currentPath === '/') {
       setOpenGroups(new Set())
-    } else if (currentPath !== '/' && previousPath === '/') {
+    } else if (currentPath !== previousPath) {
       const activeGroup = menuGroups.find(isGroupActive)
       if (activeGroup) {
         setOpenGroups(new Set([activeGroup.name]))
