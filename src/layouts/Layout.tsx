@@ -200,7 +200,7 @@ export function Layout() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-lg bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">在线工具箱</span>
-                <span className="text-xs text-muted-foreground hidden sm:block">18+ 免费实用工具</span>
+                <span className="text-xs text-muted-foreground hidden sm:block">26+ 免费实用工具</span>
               </div>
             </Link>
           </div>
