@@ -227,7 +227,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   '媒体工具': ImageIcon,
   '加密工具': Lock,
   '浏览器扩展': Globe,
-  '生活查询': MapPin,
+  '生活查询': Phone,
   'AI 工具': BrainCircuit,
 }
 
