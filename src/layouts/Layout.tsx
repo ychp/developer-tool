@@ -35,7 +35,7 @@ import {
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 const menuGroups = [
   {
@@ -162,8 +162,9 @@ export function Layout() {
   }, [favoritesOpen])
 
   const isToolActive = (path: string) => location.pathname === path
-  const isGroupActive = (group: typeof menuGroups[0]) =>
+  const isGroupActive = useCallback((group: typeof menuGroups[0]) =>
     group.tools.some(tool => isToolActive(tool.path))
+  , [location.pathname])
 
   const filteredMenuGroups = searchQuery
     ? menuGroups.map(group => ({
