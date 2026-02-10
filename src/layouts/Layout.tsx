@@ -134,6 +134,8 @@ export function Layout() {
   const [searchQuery, setSearchQuery] = useState('')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [favoritesOpen, setFavoritesOpen] = useState(true)
+  const [recentTools, setRecentTools] = useState<string[]>([])
+  const [recentOpen, setRecentOpen] = useState(true)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const location = useLocation()
 
@@ -151,6 +153,20 @@ export function Layout() {
     if (savedFavoritesOpen !== null) {
       setFavoritesOpen(savedFavoritesOpen === 'true')
     }
+
+    const savedRecentTools = localStorage.getItem('recentTools')
+    if (savedRecentTools) {
+      try {
+        setRecentTools(JSON.parse(savedRecentTools))
+      } catch (e) {
+        console.error('Failed to load recent tools:', e)
+      }
+    }
+
+    const savedRecentOpen = localStorage.getItem('recentOpen')
+    if (savedRecentOpen !== null) {
+      setRecentOpen(savedRecentOpen === 'true')
+    }
   }, [])
 
   useEffect(() => {
@@ -160,6 +176,25 @@ export function Layout() {
   useEffect(() => {
     localStorage.setItem('favoritesOpen', String(favoritesOpen))
   }, [favoritesOpen])
+
+  useEffect(() => {
+    localStorage.setItem('recentTools', JSON.stringify(recentTools))
+  }, [recentTools])
+
+  useEffect(() => {
+    localStorage.setItem('recentOpen', String(recentOpen))
+  }, [recentOpen])
+
+  useEffect(() => {
+    const currentPath = location.pathname
+    if (currentPath !== '/' && !searchQuery) {
+      setRecentTools(prev => {
+        const filtered = prev.filter(path => path !== currentPath)
+        const updated = [currentPath, ...filtered].slice(0, 10)
+        return updated
+      })
+    }
+  }, [location.pathname, searchQuery])
 
   const isToolActive = (path: string) => location.pathname === path
   const isGroupActive = useCallback((group: typeof menuGroups[0]) =>
@@ -235,6 +270,10 @@ export function Layout() {
   const favoriteTools = menuGroups.flatMap(group =>
     group.tools.filter(tool => favorites.has(tool.path))
   )
+
+  const recentToolsList = recentTools
+    .map(path => menuGroups.flatMap(group => group.tools).find(tool => tool.path === path))
+    .filter(Boolean)
 
   return (
     <div className="h-screen flex flex-col overflow-hidden relative z-10">
@@ -353,6 +392,45 @@ export function Layout() {
                           >
                             <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
                           </button>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!sidebarCollapsed && !searchQuery && recentToolsList.length > 0 && (
+              <div className="mb-4">
+                <button
+                  onClick={() => setRecentOpen(!recentOpen)}
+                  className="w-full flex items-center justify-between px-3 py-2 mb-2 text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 rounded-lg group/recent"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs font-semibold">最近使用</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">({recentToolsList.length})</span>
+                  </div>
+                  <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 text-slate-400 dark:text-slate-500 ${recentOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {recentOpen && (
+                  <div className="space-y-0.5">
+                    {recentToolsList.map((tool) => {
+                      if (!tool) return null
+                      const ToolIcon = tool.icon
+                      return (
+                        <Link
+                          key={tool.path}
+                          to={tool.path}
+                          className={`flex items-center space-x-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                            isToolActive(tool.path)
+                              ? 'bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-500/20 dark:to-teal-500/20 text-emerald-800 dark:text-emerald-200 shadow-sm'
+                              : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-emerald-700 dark:hover:text-emerald-200'
+                          }`}
+                          onClick={() => setSidebarOpen(false)}
+                        >
+                          <ToolIcon className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate">{tool.name}</span>
                         </Link>
                       )
                     })}
