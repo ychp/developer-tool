@@ -23,11 +23,11 @@ export function ImageLinkPreview() {
 
   const loadDemo = () => {
     const demoImages = [
-      'https://picsum.photos/400/300?random=1',
-      'https://picsum.photos/400/300?random=2',
-      'https://picsum.photos/400/300?random=3',
-      'https://picsum.photos/400/300?random=4',
-      'https://picsum.photos/400/300?random=5'
+      'https://placehold.co/400x300/e2e8f0/1e293b?text=Image+1',
+      'https://placehold.co/400x300/93c5fd/1e3a8a?text=Image+2',
+      'https://placehold.co/400x300/86efac/14532d?text=Image+3',
+      'https://placehold.co/400x300/fcd34d/78350f?text=Image+4',
+      'https://placehold.co/400x300/f9a8d4/831843?text=Image+5'
     ]
     setInputText(demoImages.join('\n'))
     setImageLinks(demoImages.map((url) => ({ url })))
