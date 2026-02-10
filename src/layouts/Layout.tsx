@@ -40,6 +40,7 @@ const menuGroups = [
     tools: [
       { path: '/json-formatter', name: 'JSON 格式化', icon: Code2 },
       { path: '/xml-formatter', name: 'XML 格式化', icon: FileCode },
+      { path: '/code-formatter', name: '代码格式化', icon: Code2 },
     ]
   },
   {
@@ -49,6 +50,7 @@ const menuGroups = [
       { path: '/base64', name: 'Base64 编解码', icon: Hash },
       { path: '/url-encoder', name: 'URL 编解码', icon: Link2 },
       { path: '/json-yaml-converter', name: 'JSON/YAML 转换', icon: ArrowRightLeft },
+      { path: '/image-base64', name: '图片 Base64', icon: ImageIcon },
     ]
   },
   {
