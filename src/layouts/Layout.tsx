@@ -359,36 +359,40 @@ export function Layout() {
               </div>
             )}
 
-            {!sidebarCollapsed && !searchQuery && (
-              <div className="flex items-center gap-1 mb-3">
+            {!sidebarCollapsed && !searchQuery && (favoriteTools.length > 0 || recentToolsList.length > 0) && (
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 {favoriteTools.length > 0 && (
                   <div className="relative">
                     <button
                       onClick={() => setFavoritesOpen(!favoritesOpen)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+                      className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border transition-all duration-200 ${
+                        favoritesOpen
+                          ? 'bg-amber-100 dark:bg-amber-900/40 border-amber-300 dark:border-amber-700 shadow-sm shadow-amber-200 dark:shadow-amber-900/20'
+                          : 'bg-amber-50/80 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/40'
+                      }`}
                       title="我的收藏"
                     >
                       <Star className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
-                      <span className="text-xs font-medium text-amber-700 dark:text-amber-300">{favoriteTools.length}</span>
+                      <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">{favoriteTools.length}</span>
                     </button>
                     {favoritesOpen && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setFavoritesOpen(false)} />
                         <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-lg overflow-hidden">
-                          <div className="px-3 py-2 border-b border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30">
+                          <div className="px-3 py-2.5 border-b border-amber-200 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30">
                             <div className="flex items-center gap-2">
                               <Star className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                               <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">我的收藏</span>
                             </div>
                           </div>
-                          <div className="max-h-80 overflow-y-auto p-1">
+                          <div className="max-h-80 overflow-y-auto p-1.5">
                             {favoriteTools.map((tool) => {
                               const ToolIcon = tool.icon
                               return (
                                 <div key={tool.path} className="relative group/fav-tool">
                                   <Link
                                     to={tool.path}
-                                    className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-200 ${
+                                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
                                       isToolActive(tool.path)
                                         ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 font-medium'
                                         : 'text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30'
@@ -424,23 +428,27 @@ export function Layout() {
                   <div className="relative">
                     <button
                       onClick={() => setRecentOpen(!recentOpen)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+                      className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border transition-all duration-200 ${
+                        recentOpen
+                          ? 'bg-emerald-100 dark:bg-emerald-900/40 border-emerald-300 dark:border-emerald-700 shadow-sm shadow-emerald-200 dark:shadow-emerald-900/20'
+                          : 'bg-emerald-50/80 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
+                      }`}
                       title="最近使用"
                     >
                       <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                      <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">{recentToolsList.length}</span>
+                      <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">{recentToolsList.length}</span>
                     </button>
                     {recentOpen && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setRecentOpen(false)} />
                         <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 shadow-lg overflow-hidden">
-                          <div className="px-3 py-2 border-b border-emerald-200 dark:border-emerald-900/50 bg-emerald-50 dark:bg-emerald-950/30">
+                          <div className="px-3 py-2.5 border-b border-emerald-200 dark:border-emerald-900/50 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30">
                             <div className="flex items-center gap-2">
                               <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                               <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">最近使用</span>
                             </div>
                           </div>
-                          <div className="max-h-80 overflow-y-auto p-1">
+                          <div className="max-h-80 overflow-y-auto p-1.5">
                             {recentToolsList.map((tool) => {
                               if (!tool) return null
                               const ToolIcon = tool.icon
@@ -448,7 +456,7 @@ export function Layout() {
                                 <div key={tool.path} className="relative group/recent-tool">
                                   <Link
                                     to={tool.path}
-                                    className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-200 ${
+                                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
                                       isToolActive(tool.path)
                                         ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 font-medium'
                                         : 'text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
