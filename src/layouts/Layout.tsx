@@ -360,32 +360,32 @@ export function Layout() {
             )}
 
             {!sidebarCollapsed && !searchQuery && favoriteTools.length > 0 && (
-              <div className="mb-5">
-                <div className="flex items-center gap-2 px-2 mb-2">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-amber-100 dark:bg-amber-900/30">
-                    <Star className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+              <div className="mb-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/30 overflow-hidden">
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-amber-200/60 dark:border-amber-900/30">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-amber-200 dark:bg-amber-900/50">
+                    <Star className="h-3.5 w-3.5 text-amber-700 dark:text-amber-300" />
                   </div>
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">我的收藏</span>
-                  <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">{favoriteTools.length}</span>
+                  <span className="text-xs font-semibold text-amber-900 dark:text-amber-100">我的收藏</span>
+                  <span className="text-xs text-amber-600/70 dark:text-amber-400/70 ml-auto">{favoriteTools.length}</span>
                   <button
                     onClick={() => setFavoritesOpen(!favoritesOpen)}
-                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                    className="p-1 hover:bg-amber-200/70 dark:hover:bg-amber-900/50 rounded transition-colors"
                   >
-                    <ChevronDown className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${favoritesOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 text-amber-700 dark:text-amber-300 transition-transform duration-200 ${favoritesOpen ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
                 {favoritesOpen && (
-                  <div className="space-y-1 pl-1">
+                  <div className="p-2 space-y-1">
                     {favoriteTools.map((tool) => {
                       const ToolIcon = tool.icon
                       return (
                         <div key={tool.path} className="relative group/fav-tool">
                           <Link
                             to={tool.path}
-                            className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-all duration-200 ${
+                            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
                               isToolActive(tool.path)
-                                ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 font-medium'
-                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-200'
+                                ? 'bg-white dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 font-medium shadow-sm'
+                                : 'text-amber-900/70 dark:text-amber-100/70 hover:bg-white/70 dark:hover:bg-amber-950/30'
                             }`}
                             onClick={() => setSidebarOpen(false)}
                           >
@@ -394,10 +394,10 @@ export function Layout() {
                           </Link>
                           <button
                             onClick={(e) => toggleFavorite(tool.path, e)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/fav-tool:opacity-100 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-all"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/fav-tool:opacity-100 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all"
                             title="取消收藏"
                           >
-                            <Star className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 fill-amber-500 dark:fill-amber-400" />
+                            <Star className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 fill-amber-600 dark:fill-amber-400" />
                           </button>
                         </div>
                       )
@@ -408,22 +408,22 @@ export function Layout() {
             )}
 
             {!sidebarCollapsed && !searchQuery && recentToolsList.length > 0 && (
-              <div className="mb-5">
-                <div className="flex items-center gap-2 px-2 mb-2">
-                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-900/30">
-                    <Clock className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+              <div className="mb-4 rounded-xl bg-emerald-50/50 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/30 overflow-hidden">
+                <div className="flex items-center gap-2 px-3 py-2.5 border-b border-emerald-200/60 dark:border-emerald-900/30">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-md bg-emerald-200 dark:bg-emerald-900/50">
+                    <Clock className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" />
                   </div>
-                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">最近使用</span>
-                  <span className="text-xs text-slate-400 dark:text-slate-500 ml-auto">{recentToolsList.length}</span>
+                  <span className="text-xs font-semibold text-emerald-900 dark:text-emerald-100">最近使用</span>
+                  <span className="text-xs text-emerald-600/70 dark:text-emerald-400/70 ml-auto">{recentToolsList.length}</span>
                   <button
                     onClick={() => setRecentOpen(!recentOpen)}
-                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors"
+                    className="p-1 hover:bg-emerald-200/70 dark:hover:bg-emerald-900/50 rounded transition-colors"
                   >
-                    <ChevronDown className={`h-4 w-4 text-slate-400 dark:text-slate-500 transition-transform duration-200 ${recentOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`h-4 w-4 text-emerald-700 dark:text-emerald-300 transition-transform duration-200 ${recentOpen ? 'rotate-180' : ''}`} />
                   </button>
                 </div>
                 {recentOpen && (
-                  <div className="space-y-1 pl-1">
+                  <div className="p-2 space-y-1">
                     {recentToolsList.map((tool) => {
                       if (!tool) return null
                       const ToolIcon = tool.icon
@@ -431,10 +431,10 @@ export function Layout() {
                         <div key={tool.path} className="relative group/recent-tool">
                           <Link
                             to={tool.path}
-                            className={`flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-all duration-200 ${
+                            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
                               isToolActive(tool.path)
-                                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 font-medium'
-                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-800 dark:hover:text-slate-200'
+                                ? 'bg-white dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-200 font-medium shadow-sm'
+                                : 'text-emerald-900/70 dark:text-emerald-100/70 hover:bg-white/70 dark:hover:bg-emerald-950/30'
                             }`}
                             onClick={() => setSidebarOpen(false)}
                           >
