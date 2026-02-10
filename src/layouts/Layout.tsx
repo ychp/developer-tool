@@ -235,6 +235,8 @@ export function Layout() {
     }
     closeTimeoutRef.current = setTimeout(() => {
       setHoveredGroup(null)
+      setFavoritesOpen(false)
+      setRecentOpen(false)
     }, 100)
   }
 
@@ -362,7 +364,11 @@ export function Layout() {
             {!sidebarCollapsed && !searchQuery && (favoriteTools.length > 0 || recentToolsList.length > 0) && (
               <div className="grid grid-cols-2 gap-2 mb-3">
                 {favoriteTools.length > 0 && (
-                  <div className="relative">
+                  <div
+                    className="relative"
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={closePopup}
+                  >
                     <button
                       onClick={() => setFavoritesOpen(!favoritesOpen)}
                       className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border transition-all duration-200 ${
@@ -376,56 +382,60 @@ export function Layout() {
                       <span className="text-xs font-semibold text-amber-700 dark:text-amber-300">{favoriteTools.length}</span>
                     </button>
                     {favoritesOpen && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setFavoritesOpen(false)} />
-                        <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-lg overflow-hidden">
-                          <div className="px-3 py-2.5 border-b border-amber-200 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30">
-                            <div className="flex items-center gap-2">
-                              <Star className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-                              <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">我的收藏</span>
-                            </div>
-                          </div>
-                          <div className="max-h-80 overflow-y-auto p-1.5">
-                            {favoriteTools.map((tool) => {
-                              const ToolIcon = tool.icon
-                              return (
-                                <div key={tool.path} className="relative group/fav-tool">
-                                  <Link
-                                    to={tool.path}
-                                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
-                                      isToolActive(tool.path)
-                                        ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 font-medium'
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30'
-                                    }`}
-                                    onClick={() => {
-                                      setSidebarOpen(false)
-                                      setFavoritesOpen(false)
-                                    }}
-                                  >
-                                    <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
-                                    <span className="truncate flex-1">{tool.name}</span>
-                                  </Link>
-                                  <button
-                                    onClick={(e) => {
-                                      toggleFavorite(tool.path, e)
-                                      if (favoriteTools.length === 1) setFavoritesOpen(false)
-                                    }}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/fav-tool:opacity-100 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all"
-                                    title="取消收藏"
-                                  >
-                                    <X className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                                  </button>
-                                </div>
-                              )
-                            })}
+                      <div
+                        className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-900/50 shadow-lg overflow-hidden"
+                        onMouseEnter={cancelClose}
+                      >
+                        <div className="px-3 py-2.5 border-b border-amber-200 dark:border-amber-900/50 bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950/40 dark:to-amber-900/30">
+                          <div className="flex items-center gap-2">
+                            <Star className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                            <span className="text-sm font-semibold text-amber-900 dark:text-amber-100">我的收藏</span>
                           </div>
                         </div>
-                      </>
+                        <div className="max-h-80 overflow-y-auto p-1.5">
+                          {favoriteTools.map((tool) => {
+                            const ToolIcon = tool.icon
+                            return (
+                              <div key={tool.path} className="relative group/fav-tool">
+                                <Link
+                                  to={tool.path}
+                                  className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
+                                    isToolActive(tool.path)
+                                      ? 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 font-medium'
+                                      : 'text-slate-700 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30'
+                                  }`}
+                                  onClick={() => {
+                                    setSidebarOpen(false)
+                                    setFavoritesOpen(false)
+                                  }}
+                                >
+                                  <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
+                                  <span className="truncate flex-1">{tool.name}</span>
+                                </Link>
+                                <button
+                                  onClick={(e) => {
+                                    toggleFavorite(tool.path, e)
+                                    if (favoriteTools.length === 1) setFavoritesOpen(false)
+                                  }}
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/fav-tool:opacity-100 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all"
+                                  title="取消收藏"
+                                >
+                                  <X className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
                 {recentToolsList.length > 0 && (
-                  <div className="relative">
+                  <div
+                    className="relative"
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={closePopup}
+                  >
                     <button
                       onClick={() => setRecentOpen(!recentOpen)}
                       className={`w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg border transition-all duration-200 ${
@@ -439,52 +449,52 @@ export function Layout() {
                       <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">{recentToolsList.length}</span>
                     </button>
                     {recentOpen && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setRecentOpen(false)} />
-                        <div className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 shadow-lg overflow-hidden">
-                          <div className="px-3 py-2.5 border-b border-emerald-200 dark:border-emerald-900/50 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30">
-                            <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                              <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">最近使用</span>
-                            </div>
-                          </div>
-                          <div className="max-h-80 overflow-y-auto p-1.5">
-                            {recentToolsList.map((tool) => {
-                              if (!tool) return null
-                              const ToolIcon = tool.icon
-                              return (
-                                <div key={tool.path} className="relative group/recent-tool">
-                                  <Link
-                                    to={tool.path}
-                                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
-                                      isToolActive(tool.path)
-                                        ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 font-medium'
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
-                                    }`}
-                                    onClick={() => {
-                                      setSidebarOpen(false)
-                                      setRecentOpen(false)
-                                    }}
-                                  >
-                                    <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
-                                    <span className="truncate flex-1">{tool.name}</span>
-                                  </Link>
-                                  <button
-                                    onClick={(e) => {
-                                      removeFromRecent(tool.path, e)
-                                      if (recentToolsList.length === 1) setRecentOpen(false)
-                                    }}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/recent-tool:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
-                                    title="从历史记录中删除"
-                                  >
-                                    <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                                  </button>
-                                </div>
-                              )
-                            })}
+                      <div
+                        className="absolute left-0 top-full mt-2 z-20 w-56 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-900/50 shadow-lg overflow-hidden"
+                        onMouseEnter={cancelClose}
+                      >
+                        <div className="px-3 py-2.5 border-b border-emerald-200 dark:border-emerald-900/50 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-950/40 dark:to-emerald-900/30">
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                            <span className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">最近使用</span>
                           </div>
                         </div>
-                      </>
+                        <div className="max-h-80 overflow-y-auto p-1.5">
+                          {recentToolsList.map((tool) => {
+                            if (!tool) return null
+                            const ToolIcon = tool.icon
+                            return (
+                              <div key={tool.path} className="relative group/recent-tool">
+                                <Link
+                                  to={tool.path}
+                                  className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
+                                    isToolActive(tool.path)
+                                      ? 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-200 font-medium'
+                                      : 'text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                                  }`}
+                                  onClick={() => {
+                                    setSidebarOpen(false)
+                                    setRecentOpen(false)
+                                  }}
+                                >
+                                  <ToolIcon className="h-4 w-4 shrink-0 opacity-70" />
+                                  <span className="truncate flex-1">{tool.name}</span>
+                                </Link>
+                                <button
+                                  onClick={(e) => {
+                                    removeFromRecent(tool.path, e)
+                                    if (recentToolsList.length === 1) setRecentOpen(false)
+                                  }}
+                                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded opacity-0 group-hover/recent-tool:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                  title="从历史记录中删除"
+                                >
+                                  <X className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                                </button>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
