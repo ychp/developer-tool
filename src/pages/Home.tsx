@@ -24,7 +24,8 @@ import {
   FileSpreadsheet,
   Phone,
   MapPin,
-  PhoneCall
+  PhoneCall,
+  BrainCircuit
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -181,7 +182,7 @@ const tools = [
   {
     path: '/token-calculator',
     name: 'Token 计算',
-    icon: Calculator,
+    icon: BrainCircuit,
     category: 'AI 工具',
     gradient: 'from-violet-500 to-purple-600'
   },
@@ -227,7 +228,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   '加密工具': Lock,
   '浏览器扩展': Globe,
   '生活查询': MapPin,
-  'AI 工具': Sparkles,
+  'AI 工具': BrainCircuit,
 }
 
 const categoryColors: Record<string, string> = {
