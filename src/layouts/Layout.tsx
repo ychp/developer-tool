@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from 'react-router-dom'
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
 import { 
   Code2, 
   Hash, 
@@ -137,8 +137,11 @@ export function Layout() {
   const [favoritesOpen, setFavoritesOpen] = useState(true)
   const [recentTools, setRecentTools] = useState<string[]>([])
   const [recentOpen, setRecentOpen] = useState(true)
+  const [selectedSearchIndex, setSelectedSearchIndex] = useState(-1)
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favoriteTools')
@@ -248,6 +251,62 @@ export function Layout() {
     }
   }
 
+  const flattenedTools = filteredMenuGroups.flatMap(group => group.tools)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+        return
+      }
+
+      if (e.key === 'Escape') {
+        if (searchQuery) {
+          setSearchQuery('')
+          setSelectedSearchIndex(-1)
+        } else if (sidebarOpen) {
+          setSidebarOpen(false)
+        } else if (hoveredGroup) {
+          setHoveredGroup(null)
+          setFavoritesOpen(false)
+          setRecentOpen(false)
+        }
+        return
+      }
+
+      if (searchQuery && flattenedTools.length > 0) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault()
+          setSelectedSearchIndex(prev => 
+            prev < flattenedTools.length - 1 ? prev + 1 : prev
+          )
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault()
+          setSelectedSearchIndex(prev => (prev > 0 ? prev - 1 : 0))
+        } else if (e.key === 'Enter' && selectedSearchIndex >= 0) {
+          e.preventDefault()
+          const selectedTool = flattenedTools[selectedSearchIndex]
+          if (selectedTool) {
+            navigate(selectedTool.path)
+            setSearchQuery('')
+            setSelectedSearchIndex(-1)
+            if (window.innerWidth < 1024) {
+              setSidebarOpen(false)
+            }
+          }
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [searchQuery, selectedSearchIndex, flattenedTools, sidebarOpen, hoveredGroup, navigate])
+
+  useEffect(() => {
+    setSelectedSearchIndex(-1)
+  }, [searchQuery])
+
   const toggleGroup = (groupName: string) => {
     if (openGroups.has(groupName)) {
       setOpenGroups(new Set())
@@ -345,20 +404,27 @@ export function Layout() {
               <div className="mb-3 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   placeholder="搜索工具..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                  className="w-full pl-9 pr-20 py-2 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 focus:outline-none focus:ring-2 focus:ring-sky-500 dark:focus:ring-sky-600 focus:border-transparent transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 dark:text-slate-500 rounded border border-slate-200 dark:border-slate-700">Ctrl+K</kbd>
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('')
+                        setSelectedSearchIndex(-1)
+                      }}
+                      className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             )}
 
@@ -542,6 +608,8 @@ export function Layout() {
                         <div className="ml-2 mt-1.5 space-y-0.5 pl-2 border-l-2 border-slate-200 dark:border-slate-700">
                           {group.tools.map((tool) => {
                             const ToolIcon = tool.icon
+                            const globalIndex = flattenedTools.findIndex(t => t.path === tool.path)
+                            const isSelected = searchQuery && globalIndex === selectedSearchIndex
                             return (
                               <div
                                 key={tool.path}
@@ -550,7 +618,9 @@ export function Layout() {
                                 <Link
                                   to={tool.path}
                                   className={`flex items-center justify-between space-x-2 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
-                                    isToolActive(tool.path)
+                                    isSelected
+                                      ? 'bg-gradient-to-r from-sky-400 to-blue-400 dark:from-sky-600 dark:to-blue-600 text-white shadow-md -ml-2 pr-8 ring-2 ring-sky-500 dark:ring-sky-400'
+                                      : isToolActive(tool.path)
                                       ? 'bg-gradient-to-r from-sky-200 to-blue-200 dark:from-sky-500/30 dark:to-blue-500/30 text-sky-800 dark:text-slate-200 shadow-sm -ml-2 pr-8'
                                       : 'text-slate-600 dark:text-slate-300 hover:bg-gradient-to-r hover:from-sky-50 hover:to-blue-50 dark:hover:from-slate-800/60 dark:hover:to-slate-700/60 hover:text-sky-700 dark:hover:text-slate-200 hover:-ml-2 pr-8'
                                   }`}
