@@ -32,7 +32,8 @@ import {
   Search,
   X,
   Star,
-  StarOff
+  StarOff,
+  DollarSign
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -124,6 +125,7 @@ const menuGroups = [
     icon: BrainCircuit,
     tools: [
       { path: '/token-calculator', name: 'Token 计算器', icon: BrainCircuit },
+      { path: '/ai-price-calculator', name: 'AI 价格计算器', icon: DollarSign },
     ]
   },
 ]

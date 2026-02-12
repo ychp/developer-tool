@@ -35,6 +35,7 @@ const CronGenerator = lazy(() => import('./tools/CronGenerator').then(m => ({ de
 const JsonYamlConverter = lazy(() => import('./tools/JsonYamlConverter').then(m => ({ default: m.JsonYamlConverter })))
 const ImageBase64 = lazy(() => import('./tools/ImageBase64').then(m => ({ default: m.ImageBase64 })))
 const CodeFormatter = lazy(() => import('./tools/CodeFormatter').then(m => ({ default: m.CodeFormatter })))
+const AIPriceCalculator = lazy(() => import('./tools/AIPriceCalculator').then(m => ({ default: m.AIPriceCalculator })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -63,6 +64,7 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'json-yaml-converter', Component: JsonYamlConverter },
   { path: 'image-base64', Component: ImageBase64 },
   { path: 'code-formatter', Component: CodeFormatter },
+  { path: 'ai-price-calculator', Component: AIPriceCalculator },
 ]
 
 const router = createBrowserRouter([
