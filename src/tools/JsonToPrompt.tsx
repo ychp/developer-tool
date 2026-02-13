@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Copy, Check, FileJson, FileText, AlertCircle, Settings2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -25,7 +25,6 @@ export function JsonToPrompt() {
     "years": 3
   }
 }`)
-  const [jsonError, setJsonError] = useState('')
   const [copied, setCopied] = useState(false)
   const [options, setOptions] = useState<ConversionOptions>({
     format: 'markdown',
@@ -181,36 +180,39 @@ export function JsonToPrompt() {
     return result
   }
 
-  const convert = (): string => {
+  const { output, error } = useMemo(() => {
+    if (!jsonInput.trim()) {
+      return { output: '', error: '' }
+    }
+    
     try {
       const data = JSON.parse(jsonInput)
       
       if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-        setJsonError('请输入一个有效的 JSON 对象')
-        return ''
+        return { output: '', error: '请输入一个有效的 JSON 对象' }
       }
       
-      setJsonError('')
-      
+      let result = ''
       switch (options.format) {
         case 'markdown':
-          return convertToMarkdown(data, options)
+          result = convertToMarkdown(data, options)
+          break
         case 'plain':
-          return convertToPlain(data, options)
+          result = convertToPlain(data, options)
+          break
         case 'structured':
-          return convertToStructured(data, options)
+          result = convertToStructured(data, options)
+          break
         case 'list':
-          return convertToList(data, options)
-        default:
-          return ''
+          result = convertToList(data, options)
+          break
       }
+      
+      return { output: result, error: '' }
     } catch {
-      setJsonError('JSON 格式错误，请检查输入')
-      return ''
+      return { output: '', error: 'JSON 格式错误，请检查输入' }
     }
-  }
-
-  const output = convert()
+  }, [jsonInput, options])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -243,26 +245,20 @@ export function JsonToPrompt() {
             </h2>
             <textarea
               value={jsonInput}
-              onChange={(e) => {
-                setJsonInput(e.target.value)
-                setJsonError('')
-              }}
+              onChange={(e) => setJsonInput(e.target.value)}
               placeholder="粘贴 JSON 数据..."
               rows={12}
               className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono text-sm resize-none"
             />
-            {jsonError && (
+            {error && (
               <div className="flex items-center gap-2 text-sm text-red-500 mt-2">
                 <AlertCircle className="w-4 h-4" />
-                {jsonError}
+                {error}
               </div>
             )}
             <div className="flex gap-2 mt-3">
               <Button
-                onClick={() => {
-                  setJsonInput('')
-                  setJsonError('')
-                }}
+                onClick={() => setJsonInput('')}
                 variant="outline"
                 className="flex-1"
               >
@@ -273,9 +269,8 @@ export function JsonToPrompt() {
                   try {
                     const parsed = JSON.parse(jsonInput)
                     setJsonInput(JSON.stringify(parsed, null, 2))
-                    setJsonError('')
                   } catch {
-                    setJsonError('JSON 格式错误，无法格式化')
+                    // 格式化失败时忽略
                   }
                 }}
                 variant="outline"
@@ -368,7 +363,7 @@ export function JsonToPrompt() {
                 onClick={() => copyToClipboard(output)}
                 size="sm"
                 variant="outline"
-                disabled={!output || !!jsonError}
+                disabled={!output || !!error}
               >
                 {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
                 {copied ? '已复制' : '复制'}
