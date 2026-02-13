@@ -385,7 +385,7 @@ export function Layout() {
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } ${sidebarCollapsed ? 'w-16' : 'w-64'} lg:translate-x-0`}
         >
-          <nav className="flex-1 space-y-2 p-3">
+          <nav className="flex-1 flex flex-col overflow-hidden p-3">
             <Link
               to="/"
               className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 mb-4 ${
@@ -404,7 +404,7 @@ export function Layout() {
             </Link>
 
             {!sidebarCollapsed && (
-              <div className="mb-3 relative">
+              <div className="mb-3 relative flex-shrink-0">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <input
                   ref={searchInputRef}
@@ -432,7 +432,7 @@ export function Layout() {
             )}
 
             {!sidebarCollapsed && !searchQuery && (favoriteTools.length > 0 || recentToolsList.length > 0) && (
-              <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="grid grid-cols-2 gap-2 mb-3 flex-shrink-0">
                 {favoriteTools.length > 0 && (
                   <div
                     className="relative"
@@ -579,7 +579,7 @@ export function Layout() {
               </div>
             )}
 
-            <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
+            <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0 sidebar-scrollbar">
 
             {filteredMenuGroups.map((group) => {
               const GroupIcon = group.icon
