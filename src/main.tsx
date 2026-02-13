@@ -38,6 +38,7 @@ const CodeFormatter = lazy(() => import('./tools/CodeFormatter').then(m => ({ de
 const AIPriceCalculator = lazy(() => import('./tools/AIPriceCalculator').then(m => ({ default: m.AIPriceCalculator })))
 const FunctionCallingGenerator = lazy(() => import('./tools/FunctionCallingGenerator').then(m => ({ default: m.FunctionCallingGenerator })))
 const JsonToPrompt = lazy(() => import('./tools/JsonToPrompt').then(m => ({ default: m.JsonToPrompt })))
+const ImagePromptGenerator = lazy(() => import('./tools/ImagePromptGenerator').then(m => ({ default: m.ImagePromptGenerator })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -69,6 +70,7 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'ai-price-calculator', Component: AIPriceCalculator },
   { path: 'function-calling-generator', Component: FunctionCallingGenerator },
   { path: 'json-to-prompt', Component: JsonToPrompt },
+  { path: 'image-prompt-generator', Component: ImagePromptGenerator },
 ]
 
 const router = createBrowserRouter([
