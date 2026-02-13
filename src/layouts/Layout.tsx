@@ -127,6 +127,7 @@ const menuGroups = [
       { path: '/token-calculator', name: 'Token 计算器', icon: BrainCircuit },
       { path: '/ai-price-calculator', name: 'AI 价格计算器', icon: DollarSign },
       { path: '/function-calling-generator', name: 'Function Calling 生成器', icon: Code2 },
+      { path: '/json-to-prompt', name: 'JSON → Prompt', icon: ArrowRightLeft },
     ]
   },
 ]
