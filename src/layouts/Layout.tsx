@@ -35,7 +35,8 @@ import {
   StarOff,
   DollarSign,
   FileText,
-  Layers
+  Layers,
+  Building
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -120,6 +121,7 @@ const menuGroups = [
       { path: '/phone-number', name: '手机号归属', icon: Phone },
       { path: '/postal-code', name: '邮编查询', icon: MapPin },
       { path: '/area-code', name: '电话区号', icon: PhoneCall },
+      { path: '/mortgage-calculator', name: '房贷计算器', icon: Building },
     ]
   },
   {
