@@ -33,7 +33,9 @@ import {
   X,
   Star,
   StarOff,
-  DollarSign
+  DollarSign,
+  FileText,
+  Layers
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -130,6 +132,8 @@ const menuGroups = [
       { path: '/json-to-prompt', name: 'JSON → Prompt', icon: ArrowRightLeft },
       { path: '/image-prompt-generator', name: '图像 Prompt 生成器', icon: ImageIcon },
       { path: '/system-prompt-generator', name: 'System Prompt 生成器', icon: Sparkles },
+      { path: '/markdown-to-prompt', name: 'Markdown → Prompt', icon: FileText },
+      { path: '/fewshot-formatter', name: 'Few-shot 格式化', icon: Layers },
     ]
   },
 ]

@@ -5,6 +5,7 @@ import './index.css'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { Layout } from './layouts/Layout'
 import { Home } from './pages/Home'
+import { NotFound } from './pages/NotFound'
 import { ToolSkeleton } from './components/ui/tool-skeleton'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import './pwa'
@@ -40,6 +41,8 @@ const FunctionCallingGenerator = lazy(() => import('./tools/FunctionCallingGener
 const JsonToPrompt = lazy(() => import('./tools/JsonToPrompt').then(m => ({ default: m.JsonToPrompt })))
 const ImagePromptGenerator = lazy(() => import('./tools/ImagePromptGenerator').then(m => ({ default: m.ImagePromptGenerator })))
 const SystemPromptGenerator = lazy(() => import('./tools/SystemPromptGenerator').then(m => ({ default: m.SystemPromptGenerator })))
+const MarkdownToPrompt = lazy(() => import('./tools/MarkdownToPrompt').then(m => ({ default: m.MarkdownToPrompt })))
+const FewshotFormatter = lazy(() => import('./tools/FewshotFormatter').then(m => ({ default: m.FewshotFormatter })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -73,6 +76,8 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'json-to-prompt', Component: JsonToPrompt },
   { path: 'image-prompt-generator', Component: ImagePromptGenerator },
   { path: 'system-prompt-generator', Component: SystemPromptGenerator },
+  { path: 'markdown-to-prompt', Component: MarkdownToPrompt },
+  { path: 'fewshot-formatter', Component: FewshotFormatter },
 ]
 
 const router = createBrowserRouter([
@@ -91,6 +96,7 @@ const router = createBrowserRouter([
           </ErrorBoundary>
         ),
       })),
+      { path: '*', element: <NotFound /> },
     ],
   },
 ])
