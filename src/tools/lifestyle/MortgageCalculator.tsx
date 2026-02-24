@@ -272,9 +272,17 @@ export function MortgageCalculator() {
         newFundPrincipal = beforeFund.balance - (prepayment.amount * (beforeFund.balance / totalBalance))
       }
       
-      const commercialMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newCommercialPrincipal), loan.commercialRate / 100 / 12, remainingMonths)
-      const fundMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newFundPrincipal), loan.fundRate / 100 / 12, remainingMonths)
-      const newMonthlyPayment = commercialMonthlyPayment + fundMonthlyPayment
+      let newMonthlyPayment = 0
+      
+      if (loan.loanType === 'commercial') {
+        newMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newCommercialPrincipal), loan.commercialRate / 100 / 12, remainingMonths)
+      } else if (loan.loanType === 'fund') {
+        newMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newFundPrincipal), loan.fundRate / 100 / 12, remainingMonths)
+      } else {
+        const commercialMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newCommercialPrincipal), loan.commercialRate / 100 / 12, remainingMonths)
+        const fundMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newFundPrincipal), loan.fundRate / 100 / 12, remainingMonths)
+        newMonthlyPayment = commercialMonthlyPayment + fundMonthlyPayment
+      }
 
       const newSchedule: PaymentSchedule[] = []
       
@@ -282,19 +290,42 @@ export function MortgageCalculator() {
       let fundBalance = Math.max(0, newFundPrincipal)
       
       for (let i = 0; i < remainingMonths; i++) {
-        const commercialInterest = commercialBalance * (loan.commercialRate / 100 / 12)
-        const commercialPrincipalPaid = commercialMonthlyPayment - commercialInterest
-        commercialBalance -= commercialPrincipalPaid
+        let payment = 0
+        let principalPaid = 0
+        let interest = 0
         
-        const fundInterest = fundBalance * (loan.fundRate / 100 / 12)
-        const fundPrincipalPaid = fundMonthlyPayment - fundInterest
-        fundBalance -= fundPrincipalPaid
+        if (loan.loanType === 'commercial') {
+          interest = commercialBalance * (loan.commercialRate / 100 / 12)
+          principalPaid = newMonthlyPayment - interest
+          commercialBalance -= principalPaid
+          payment = newMonthlyPayment
+        } else if (loan.loanType === 'fund') {
+          interest = fundBalance * (loan.fundRate / 100 / 12)
+          principalPaid = newMonthlyPayment - interest
+          fundBalance -= principalPaid
+          payment = newMonthlyPayment
+        } else {
+          const commercialMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newCommercialPrincipal), loan.commercialRate / 100 / 12, remainingMonths)
+          const fundMonthlyPayment = calculateEqualInterestPayment(Math.max(0, newFundPrincipal), loan.fundRate / 100 / 12, remainingMonths)
+          
+          const commercialInterest = commercialBalance * (loan.commercialRate / 100 / 12)
+          const commercialPrincipalPaid = commercialMonthlyPayment - commercialInterest
+          commercialBalance -= commercialPrincipalPaid
+          
+          const fundInterest = fundBalance * (loan.fundRate / 100 / 12)
+          const fundPrincipalPaid = fundMonthlyPayment - fundInterest
+          fundBalance -= fundPrincipalPaid
+          
+          payment = commercialMonthlyPayment + fundMonthlyPayment
+          principalPaid = commercialPrincipalPaid + fundPrincipalPaid
+          interest = commercialInterest + fundInterest
+        }
         
         newSchedule.push({
           month: atMonth + i + 1,
-          payment: newMonthlyPayment,
-          principal: commercialPrincipalPaid + fundPrincipalPaid,
-          interest: commercialInterest + fundInterest,
+          payment,
+          principal: principalPaid,
+          interest,
           balance: Math.max(0, commercialBalance + fundBalance)
         })
       }
@@ -342,43 +373,44 @@ export function MortgageCalculator() {
       let fundBalance = Math.max(0, newFundPrincipal)
       let month = atMonth
 
-      const beforeTotalBalance = beforeCommercial.balance + beforeFund.balance
-
       while ((commercialBalance > 0.01 || fundBalance > 0.01) && month < combinedSchedule.length + atMonth) {
-        let commercialPayment = 0
-        let fundPayment = 0
-        let commercialInterest = 0
-        let fundInterest = 0
-        let commercialPrincipalPaid = 0
-        let fundPrincipalPaid = 0
+        let payment = 0
+        let principalPaid = 0
+        let interest = 0
         
-        if (commercialBalance > 0.01) {
-          commercialInterest = commercialBalance * (loan.commercialRate / 100 / 12)
-          if (loan.loanType === 'combined') {
-            commercialPayment = originalMonthlyPayment * (beforeCommercial.balance / beforeTotalBalance)
-          } else {
-            commercialPayment = originalMonthlyPayment
-          }
-          commercialPrincipalPaid = Math.min(commercialPayment - commercialInterest, commercialBalance)
+        if (loan.loanType === 'commercial') {
+          interest = commercialBalance * (loan.commercialRate / 100 / 12)
+          principalPaid = Math.min(originalMonthlyPayment - interest, commercialBalance)
+          commercialBalance -= principalPaid
+          payment = originalMonthlyPayment
+        } else if (loan.loanType === 'fund') {
+          interest = fundBalance * (loan.fundRate / 100 / 12)
+          principalPaid = Math.min(originalMonthlyPayment - interest, fundBalance)
+          fundBalance -= principalPaid
+          payment = originalMonthlyPayment
+        } else {
+          const beforeTotalBalance = beforeCommercial.balance + beforeFund.balance
+          
+          const commercialPayment = originalMonthlyPayment * (beforeCommercial.balance / beforeTotalBalance)
+          const commercialInterest = commercialBalance * (loan.commercialRate / 100 / 12)
+          const commercialPrincipalPaid = Math.min(commercialPayment - commercialInterest, commercialBalance)
           commercialBalance -= commercialPrincipalPaid
-        }
-        
-        if (fundBalance > 0.01) {
-          fundInterest = fundBalance * (loan.fundRate / 100 / 12)
-          if (loan.loanType === 'combined') {
-            fundPayment = originalMonthlyPayment * (beforeFund.balance / beforeTotalBalance)
-          } else {
-            fundPayment = originalMonthlyPayment
-          }
-          fundPrincipalPaid = Math.min(fundPayment - fundInterest, fundBalance)
+          
+          const fundPayment = originalMonthlyPayment * (beforeFund.balance / beforeTotalBalance)
+          const fundInterest = fundBalance * (loan.fundRate / 100 / 12)
+          const fundPrincipalPaid = Math.min(fundPayment - fundInterest, fundBalance)
           fundBalance -= fundPrincipalPaid
+          
+          payment = commercialPayment + fundPayment
+          principalPaid = commercialPrincipalPaid + fundPrincipalPaid
+          interest = commercialInterest + fundInterest
         }
         
         newSchedule.push({
           month: month + 1,
-          payment: commercialPayment + fundPayment,
-          principal: commercialPrincipalPaid + fundPrincipalPaid,
-          interest: commercialInterest + fundInterest,
+          payment,
+          principal: principalPaid,
+          interest,
           balance: Math.max(0, commercialBalance + fundBalance)
         })
 
@@ -404,12 +436,20 @@ export function MortgageCalculator() {
   const refinanceResult = useMemo(() => {
     if (!refinance.enabled) return null
 
-    const avgRate = (loan.commercialAmount * loan.commercialRate + loan.fundAmount * loan.fundRate) /
-                    (loan.commercialAmount + loan.fundAmount)
+    let avgRate = 0
+    
+    if (loan.loanType === 'commercial') {
+      avgRate = loan.commercialRate
+    } else if (loan.loanType === 'fund') {
+      avgRate = loan.fundRate
+    } else {
+      avgRate = (loan.commercialAmount * loan.commercialRate + loan.fundAmount * loan.fundRate) /
+                      (loan.commercialAmount + loan.fundAmount)
+    }
 
     const monthlySavings = baseSummary.monthlyPayment * (avgRate - refinance.newRate) / 100 / 12
     const totalSavings = monthlySavings * combinedSchedule.length - refinance.fee
-    const breakEvenMonths = refinance.fee / monthlySavings
+    const breakEvenMonths = refinance.fee / (monthlySavings || 1)
 
     return {
       monthlySavings,
