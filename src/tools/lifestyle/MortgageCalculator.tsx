@@ -26,6 +26,7 @@ interface PrepaymentConfig {
 
 interface RefinanceConfig {
   enabled: boolean
+  amount: number
   newRate: number
   fee: number
 }
@@ -125,6 +126,7 @@ export function MortgageCalculator() {
 
   const [refinance, setRefinance] = useState<RefinanceConfig>({
     enabled: false,
+    amount: 0,
     newRate: 3.0,
     fee: 5000
   })
@@ -436,18 +438,25 @@ export function MortgageCalculator() {
   const refinanceResult = useMemo(() => {
     if (!refinance.enabled) return null
 
-    let avgRate = 0
+    let totalPrincipal = 0
     
     if (loan.loanType === 'commercial') {
-      avgRate = loan.commercialRate
+      totalPrincipal = loan.commercialAmount
     } else if (loan.loanType === 'fund') {
-      avgRate = loan.fundRate
+      totalPrincipal = loan.fundAmount
     } else {
-      avgRate = (loan.commercialAmount * loan.commercialRate + loan.fundAmount * loan.fundRate) /
-                      (loan.commercialAmount + loan.fundAmount)
+      totalPrincipal = loan.commercialAmount + loan.fundAmount
     }
 
-    const monthlySavings = baseSummary.monthlyPayment * (avgRate - refinance.newRate) / 100 / 12
+    const refinanceAmount = refinance.amount > 0 ? refinance.amount : totalPrincipal
+    const refinanceRatio = refinanceAmount / totalPrincipal
+    
+    const originalRefinancePayment = baseSummary.monthlyPayment * refinanceRatio
+    const newRefinancePayment = refinanceAmount * (refinance.newRate / 100 / 12) * 
+                                Math.pow(1 + refinance.newRate / 100 / 12, combinedSchedule.length) / 
+                                (Math.pow(1 + refinance.newRate / 100 / 12, combinedSchedule.length) - 1)
+    
+    const monthlySavings = originalRefinancePayment - newRefinancePayment
     const totalSavings = monthlySavings * combinedSchedule.length - refinance.fee
     const breakEvenMonths = refinance.fee / (monthlySavings || 1)
 
@@ -455,9 +464,12 @@ export function MortgageCalculator() {
       monthlySavings,
       totalSavings,
       breakEvenMonths,
-      worthIt: totalSavings > 0
+      worthIt: totalSavings > 0,
+      refinanceAmount,
+      originalRefinancePayment,
+      newRefinancePayment
     }
-  }, [refinance.enabled, refinance.newRate, refinance.fee, baseSummary, loan, combinedSchedule.length])
+  }, [refinance.enabled, refinance.amount, refinance.newRate, refinance.fee, baseSummary, loan, combinedSchedule.length])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('zh-CN', {
@@ -781,6 +793,21 @@ export function MortgageCalculator() {
 
             {expandedSection === 'refinance' && refinanceResult && (
               <div className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    置换金额（万元）
+                  </label>
+                  <input
+                    type="number"
+                    value={refinance.amount / 10000}
+                    onChange={(e) => updateRefinance('amount', (parseFloat(e.target.value) || 0) * 10000)}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    留空或输入 0 表示全额置换
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -812,6 +839,18 @@ export function MortgageCalculator() {
                     {refinanceResult.worthIt ? '✓ 建议置换' : '✗ 不建议置换'}
                   </h3>
                   <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">置换金额：</span>
+                      <span className="font-medium">{formatCurrency(refinanceResult.refinanceAmount)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">原月供：</span>
+                      <span className="font-medium">{formatCurrency(refinanceResult.originalRefinancePayment)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">新月供：</span>
+                      <span className="font-medium">{formatCurrency(refinanceResult.newRefinancePayment)}</span>
+                    </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600 dark:text-slate-400">月供节省：</span>
                       <span className="font-medium">{formatCurrency(refinanceResult.monthlySavings)}</span>
