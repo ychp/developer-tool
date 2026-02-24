@@ -25,7 +25,11 @@ import {
   Phone,
   MapPin,
   PhoneCall,
-  BrainCircuit
+  BrainCircuit,
+  DollarSign,
+  FileText,
+  Layers,
+  Building
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -47,6 +51,13 @@ const tools = [
     gradient: 'from-blue-500 to-blue-600'
   },
   {
+    path: '/code-formatter',
+    name: '代码格式化',
+    icon: Code2,
+    category: '格式化',
+    gradient: 'from-indigo-500 to-purple-600'
+  },
+  {
     path: '/base64',
     name: 'Base64 编解码',
     icon: Hash,
@@ -59,6 +70,20 @@ const tools = [
     icon: Link2,
     category: '编码转换',
     gradient: 'from-sky-400 to-sky-500'
+  },
+  {
+    path: '/json-yaml-converter',
+    name: 'JSON/YAML 转换',
+    icon: ArrowRightLeft,
+    category: '编码转换',
+    gradient: 'from-teal-500 to-cyan-600'
+  },
+  {
+    path: '/image-base64',
+    name: '图片 Base64',
+    icon: ImageIcon,
+    category: '编码转换',
+    gradient: 'from-violet-500 to-purple-600'
   },
   {
     path: '/regex-tester',
@@ -124,6 +149,13 @@ const tools = [
     gradient: 'from-cyan-400 to-cyan-500'
   },
   {
+    path: '/cron-generator',
+    name: 'Cron 生成',
+    icon: Clock,
+    category: '生成器',
+    gradient: 'from-sky-500 to-blue-600'
+  },
+  {
     path: '/image-link-preview',
     name: '图片链接预览',
     icon: ImageIcon,
@@ -180,38 +212,73 @@ const tools = [
     gradient: 'from-cyan-500 to-cyan-600'
   },
   {
+    path: '/mortgage-calculator',
+    name: '房贷计算器',
+    icon: Building,
+    category: '生活查询',
+    gradient: 'from-blue-500 to-indigo-600'
+  },
+  {
     path: '/token-calculator',
-    name: 'Token 计算',
+    name: 'Token 计算器',
     icon: BrainCircuit,
     category: 'AI 工具',
     gradient: 'from-violet-500 to-purple-600'
   },
   {
-    path: '/cron-generator',
-    name: 'Cron 生成',
-    icon: Clock,
-    category: '生成器',
+    path: '/ai-price-calculator',
+    name: 'AI 价格计算器',
+    icon: DollarSign,
+    category: 'AI 工具',
+    gradient: 'from-emerald-500 to-teal-600'
+  },
+  {
+    path: '/function-calling-generator',
+    name: 'Function Calling 生成器',
+    icon: Code2,
+    category: 'AI 工具',
     gradient: 'from-sky-500 to-blue-600'
   },
   {
-    path: '/json-yaml-converter',
-    name: 'JSON/YAML 转换',
+    path: '/json-to-prompt',
+    name: 'JSON → Prompt',
     icon: ArrowRightLeft,
-    category: '编码转换',
+    category: 'AI 工具',
+    gradient: 'from-cyan-500 to-sky-600'
+  },
+  {
+    path: '/image-prompt-generator',
+    name: '图像 Prompt 生成器',
+    icon: ImageIcon,
+    category: 'AI 工具',
+    gradient: 'from-violet-500 to-pink-600'
+  },
+  {
+    path: '/system-prompt-generator',
+    name: 'System Prompt 生成器',
+    icon: Sparkles,
+    category: 'AI 工具',
+    gradient: 'from-purple-500 to-indigo-600'
+  },
+  {
+    path: '/markdown-to-prompt',
+    name: 'Markdown → Prompt',
+    icon: FileText,
+    category: 'AI 工具',
+    gradient: 'from-blue-500 to-violet-600'
+  },
+  {
+    path: '/fewshot-formatter',
+    name: 'Few-shot 格式化',
+    icon: Layers,
+    category: 'AI 工具',
     gradient: 'from-teal-500 to-cyan-600'
   },
   {
-    path: '/image-base64',
-    name: '图片 Base64',
-    icon: ImageIcon,
-    category: '编码转换',
-    gradient: 'from-violet-500 to-purple-600'
-  },
-  {
-    path: '/code-formatter',
-    name: '代码格式化',
-    icon: Code2,
-    category: '格式化',
+    path: '/image-size-calculator',
+    name: '图像尺寸计算器',
+    icon: Calculator,
+    category: 'AI 工具',
     gradient: 'from-indigo-500 to-purple-600'
   },
 ]
