@@ -144,7 +144,15 @@ export function MortgageCalculator() {
   }
 
   const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section)
+    const newExpanded = expandedSection === section ? null : section
+    
+    setExpandedSection(newExpanded)
+    
+    if (section === 'prepayment') {
+      setPrepayment(prev => ({ ...prev, enabled: newExpanded === section }))
+    } else if (section === 'refinance') {
+      setRefinance(prev => ({ ...prev, enabled: newExpanded === section }))
+    }
   }
 
   const commercialLoan = useMemo(() => {
@@ -551,116 +559,102 @@ export function MortgageCalculator() {
 
             {expandedSection === 'prepayment' && (
               <div className="mt-4 space-y-4">
-                <label className="flex items-center gap-2 text-sm">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    提前还款金额（万元）
+                  </label>
                   <input
-                    type="checkbox"
-                    checked={prepayment.enabled}
-                    onChange={(e) => updatePrepayment('enabled', e.target.checked)}
-                    className="rounded border-slate-300 text-sky-500 focus:ring-sky-500"
+                    type="number"
+                    value={prepayment.amount / 10000}
+                    onChange={(e) => updatePrepayment('amount', (parseFloat(e.target.value) || 0) * 10000)}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                   />
-                  <span className="text-slate-700 dark:text-slate-300">启用提前还款计算</span>
-                </label>
+                </div>
 
-                {prepayment.enabled && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        提前还款金额（万元）
-                      </label>
-                      <input
-                        type="number"
-                        value={prepayment.amount / 10000}
-                        onChange={(e) => updatePrepayment('amount', (parseFloat(e.target.value) || 0) * 10000)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    提前还款期数
+                  </label>
+                  <input
+                    type="number"
+                    value={prepayment.atMonth}
+                    onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value) || 0)}
+                    min={1}
+                    max={combinedSchedule.length}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    当前贷款总期数：{combinedSchedule.length} 期
+                  </p>
+                </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        提前还款期数
-                      </label>
-                      <input
-                        type="number"
-                        value={prepayment.atMonth}
-                        onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value) || 0)}
-                        min={1}
-                        max={combinedSchedule.length}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        当前贷款总期数：{combinedSchedule.length} 期
-                      </p>
-                    </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    还款方式
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => updatePrepayment('type', 'reduce-payment')}
+                      className={`p-3 rounded-lg border text-center transition-colors ${
+                        prepayment.type === 'reduce-payment'
+                          ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
+                      }`}
+                    >
+                      <div className="font-medium text-sm">减少月供</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">年限不变，月供减少</div>
+                    </button>
+                    <button
+                      onClick={() => updatePrepayment('type', 'shorten-term')}
+                      className={`p-3 rounded-lg border text-center transition-colors ${
+                        prepayment.type === 'shorten-term'
+                          ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
+                      }`}
+                    >
+                      <div className="font-medium text-sm">缩短年限</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">月供不变，提前还清</div>
+                    </button>
+                  </div>
+                </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        还款方式
-                      </label>
-                      <div className="grid grid-cols-2 gap-3">
-                        <button
-                          onClick={() => updatePrepayment('type', 'reduce-payment')}
-                          className={`p-3 rounded-lg border text-center transition-colors ${
-                            prepayment.type === 'reduce-payment'
-                              ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
-                          }`}
-                        >
-                          <div className="font-medium text-sm">减少月供</div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">年限不变，月供减少</div>
-                        </button>
-                        <button
-                          onClick={() => updatePrepayment('type', 'shorten-term')}
-                          className={`p-3 rounded-lg border text-center transition-colors ${
-                            prepayment.type === 'shorten-term'
-                              ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
-                              : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
-                          }`}
-                        >
-                          <div className="font-medium text-sm">缩短年限</div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">月供不变，提前还清</div>
-                        </button>
+                {prepaymentResult && (
+                  <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                    <h3 className="font-medium text-green-700 dark:text-green-400 mb-2">提前还款效果</h3>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-600 dark:text-slate-400">节省利息：</span>
+                        <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(prepaymentResult.savings)}</span>
                       </div>
-                    </div>
-
-                    {prepaymentResult && (
-                      <div className="p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                        <h3 className="font-medium text-green-700 dark:text-green-400 mb-2">提前还款效果</h3>
-                        <div className="space-y-1 text-sm">
+                      {prepayment.type === 'reduce-payment' ? (
+                        <>
                           <div className="flex justify-between">
-                            <span className="text-slate-600 dark:text-slate-400">节省利息：</span>
-                            <span className="font-medium text-green-600 dark:text-green-400">{formatCurrency(prepaymentResult.savings)}</span>
+                            <span className="text-slate-600 dark:text-slate-400">原月供：</span>
+                            <span className="font-medium">{formatCurrency(prepaymentResult.originalMonthlyPayment)}</span>
                           </div>
-                          {prepayment.type === 'reduce-payment' ? (
-                            <>
-                              <div className="flex justify-between">
-                                <span className="text-slate-600 dark:text-slate-400">原月供：</span>
-                                <span className="font-medium">{formatCurrency(prepaymentResult.originalMonthlyPayment)}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-slate-600 dark:text-slate-400">新月供：</span>
-                                <span className="font-medium">{formatCurrency(prepaymentResult.newMonthlyPayment)}</span>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <div className="flex justify-between">
-                                <span className="text-slate-600 dark:text-slate-400">原剩余期数：</span>
-                                <span className="font-medium">{combinedSchedule.length - prepayment.atMonth} 期</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-slate-600 dark:text-slate-400">新剩余期数：</span>
-                                <span className="font-medium text-green-600 dark:text-green-400">{prepaymentResult.newSchedule.length} 期</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-slate-600 dark:text-slate-400">缩短月数：</span>
-                                <span className="font-medium text-green-600 dark:text-green-400">{prepaymentResult.monthsSaved} 个月</span>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-400">新月供：</span>
+                            <span className="font-medium">{formatCurrency(prepaymentResult.newMonthlyPayment)}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-400">原剩余期数：</span>
+                            <span className="font-medium">{combinedSchedule.length - prepayment.atMonth} 期</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-400">新剩余期数：</span>
+                            <span className="font-medium text-green-600 dark:text-green-400">{prepaymentResult.newSchedule.length} 期</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-600 dark:text-slate-400">缩短月数：</span>
+                            <span className="font-medium text-green-600 dark:text-green-400">{prepaymentResult.monthsSaved} 个月</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 )}
               </div>
             )}
@@ -678,69 +672,55 @@ export function MortgageCalculator() {
               {expandedSection === 'refinance' ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
             </button>
 
-            {expandedSection === 'refinance' && (
+            {expandedSection === 'refinance' && refinanceResult && (
               <div className="mt-4 space-y-4">
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={refinance.enabled}
-                    onChange={(e) => updateRefinance('enabled', e.target.checked)}
-                    className="rounded border-slate-300 text-sky-500 focus:ring-sky-500"
-                  />
-                  <span className="text-slate-700 dark:text-slate-300">启用贷款置换分析</span>
-                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      新贷款年利率（%）
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={refinance.newRate}
+                      onChange={(e) => updateRefinance('newRate', parseFloat(e.target.value) || 0)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      手续费（元）
+                    </label>
+                    <input
+                      type="number"
+                      value={refinance.fee}
+                      onChange={(e) => updateRefinance('fee', parseFloat(e.target.value) || 0)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                </div>
 
-                {refinance.enabled && refinanceResult && (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          新贷款年利率（%）
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={refinance.newRate}
-                          onChange={(e) => updateRefinance('newRate', parseFloat(e.target.value) || 0)}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          手续费（元）
-                        </label>
-                        <input
-                          type="number"
-                          value={refinance.fee}
-                          onChange={(e) => updateRefinance('fee', parseFloat(e.target.value) || 0)}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                      </div>
+                <div className={`p-4 rounded-lg border ${refinanceResult.worthIt ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
+                  <h3 className={`font-medium mb-2 ${refinanceResult.worthIt ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                    {refinanceResult.worthIt ? '✓ 建议置换' : '✗ 不建议置换'}
+                  </h3>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">月供节省：</span>
+                      <span className="font-medium">{formatCurrency(refinanceResult.monthlySavings)}</span>
                     </div>
-
-                    <div className={`p-4 rounded-lg border ${refinanceResult.worthIt ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
-                      <h3 className={`font-medium mb-2 ${refinanceResult.worthIt ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                        {refinanceResult.worthIt ? '✓ 建议置换' : '✗ 不建议置换'}
-                      </h3>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">月供节省：</span>
-                          <span className="font-medium">{formatCurrency(refinanceResult.monthlySavings)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">总节省：</span>
-                          <span className={`font-medium ${refinanceResult.totalSavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            {formatCurrency(refinanceResult.totalSavings)}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-600 dark:text-slate-400">回本周期：</span>
-                          <span className="font-medium">{Math.ceil(refinanceResult.breakEvenMonths)} 个月</span>
-                        </div>
-                      </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">总节省：</span>
+                      <span className={`font-medium ${refinanceResult.totalSavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {formatCurrency(refinanceResult.totalSavings)}
+                      </span>
                     </div>
-                  </>
-                )}
+                    <div className="flex justify-between">
+                      <span className="text-slate-600 dark:text-slate-400">回本周期：</span>
+                      <span className="font-medium">{Math.ceil(refinanceResult.breakEvenMonths)} 个月</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </Card>
