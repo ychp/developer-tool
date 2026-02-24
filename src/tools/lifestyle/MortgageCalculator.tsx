@@ -468,13 +468,13 @@ export function MortgageCalculator() {
     }).format(amount)
   }
 
-  const getDisplaySchedule = () => {
+  const getDisplaySchedule = useMemo(() => {
     if (prepaymentResult?.newSchedule && prepayment.enabled) {
       const beforePrepayment = combinedSchedule.slice(0, prepayment.atMonth)
       return [...beforePrepayment, ...prepaymentResult.newSchedule]
     }
     return combinedSchedule
-  }
+  }, [prepaymentResult, prepayment.enabled, prepayment.atMonth, combinedSchedule])
 
   return (
     <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -926,7 +926,7 @@ export function MortgageCalculator() {
               </tr>
             </thead>
             <tbody>
-              {getDisplaySchedule().map((item) => (
+              {getDisplaySchedule.map((item) => (
                 <tr
                   key={item.month}
                   className={prepayment.enabled && item.month === prepayment.atMonth ? 'bg-green-50 dark:bg-green-900/20' : 'border-b border-slate-100 dark:border-slate-800'}
