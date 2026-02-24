@@ -129,6 +129,7 @@ const menuGroups = [
       { path: '/function-calling-generator', name: 'Function Calling 生成器', icon: Code2 },
       { path: '/json-to-prompt', name: 'JSON → Prompt', icon: ArrowRightLeft },
       { path: '/image-prompt-generator', name: '图像 Prompt 生成器', icon: ImageIcon },
+      { path: '/system-prompt-generator', name: 'System Prompt 生成器', icon: Sparkles },
     ]
   },
 ]
