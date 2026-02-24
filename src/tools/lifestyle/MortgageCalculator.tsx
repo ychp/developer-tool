@@ -120,13 +120,13 @@ export function MortgageCalculator() {
   const [prepayment, setPrepayment] = useState<PrepaymentConfig>({
     enabled: false,
     amount: 100000,
-    atMonth: 60,
+    atMonth: 1,
     type: 'reduce-payment'
   })
 
   const [refinance, setRefinance] = useState<RefinanceConfig>({
     enabled: false,
-    amount: 0,
+    amount: 100000,
     newRate: 3.0,
     newMonths: 360
   })
@@ -436,7 +436,7 @@ export function MortgageCalculator() {
   }, [prepayment.enabled, prepayment.amount, prepayment.atMonth, prepayment.type, combinedSchedule, baseSummary, loan, commercialLoan.schedule, fundLoan.schedule, commercialLoan.totalInterest, fundLoan.totalInterest])
 
   const refinanceResult = useMemo(() => {
-    if (!refinance.enabled) return null
+    if (!refinance.enabled || refinance.amount <= 0) return null
 
     let totalPrincipal = 0
     let originalRate = 0
@@ -453,7 +453,7 @@ export function MortgageCalculator() {
                      (loan.commercialAmount + loan.fundAmount)
     }
 
-    const refinanceAmount = refinance.amount > 0 ? refinance.amount : totalPrincipal
+    const refinanceAmount = Math.min(refinance.amount, totalPrincipal)
     const remainingOriginalPrincipal = totalPrincipal - refinanceAmount
     
     const monthlyRate = originalRate / 100 / 12
