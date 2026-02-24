@@ -28,7 +28,7 @@ interface RefinanceConfig {
   enabled: boolean
   amount: number
   newRate: number
-  fee: number
+  newMonths: number
 }
 
 interface PaymentSchedule {
@@ -128,7 +128,7 @@ export function MortgageCalculator() {
     enabled: false,
     amount: 0,
     newRate: 3.0,
-    fee: 5000
+    newMonths: 360
   })
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
@@ -466,8 +466,8 @@ export function MortgageCalculator() {
                                        (Math.pow(1 + monthlyRate, combinedSchedule.length) - 1)
     
     const thirdPartyMonthlyPayment = refinanceAmount * newMonthlyRate * 
-                                      Math.pow(1 + newMonthlyRate, combinedSchedule.length) / 
-                                      (Math.pow(1 + newMonthlyRate, combinedSchedule.length) - 1)
+                                      Math.pow(1 + newMonthlyRate, refinance.newMonths) / 
+                                      (Math.pow(1 + newMonthlyRate, refinance.newMonths) - 1)
     
     const newTotalMonthlyPayment = newOriginalMonthlyPayment + thirdPartyMonthlyPayment
     
@@ -475,16 +475,13 @@ export function MortgageCalculator() {
     
     const originalTotalPayment = originalMonthlyPayment * combinedSchedule.length
     const newTotalPayment = (newOriginalMonthlyPayment * combinedSchedule.length) + 
-                            (thirdPartyMonthlyPayment * combinedSchedule.length) + 
-                            refinance.fee
+                            (thirdPartyMonthlyPayment * refinance.newMonths)
     const totalSavings = originalTotalPayment - newTotalPayment
-    
-    const breakEvenMonths = monthlySavings > 0 ? refinance.fee / monthlySavings : Infinity
 
     return {
       monthlySavings,
       totalSavings,
-      breakEvenMonths,
+      breakEvenMonths: 0,
       worthIt: totalSavings > 0,
       refinanceAmount,
       originalMonthlyPayment,
@@ -493,7 +490,7 @@ export function MortgageCalculator() {
       newTotalMonthlyPayment,
       remainingOriginalPrincipal
     }
-  }, [refinance.enabled, refinance.amount, refinance.newRate, refinance.fee, baseSummary, loan, combinedSchedule.length])
+  }, [refinance.enabled, refinance.amount, refinance.newRate, refinance.newMonths, baseSummary, loan, combinedSchedule.length])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('zh-CN', {
@@ -847,12 +844,14 @@ export function MortgageCalculator() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      手续费（元）
+                      三方贷款期数（月）
                     </label>
                     <input
                       type="number"
-                      value={refinance.fee}
-                      onChange={(e) => updateRefinance('fee', parseFloat(e.target.value) || 0)}
+                      value={refinance.newMonths}
+                      onChange={(e) => updateRefinance('newMonths', parseInt(e.target.value) || 0)}
+                      min={1}
+                      max={360}
                       className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     />
                   </div>
@@ -903,10 +902,6 @@ export function MortgageCalculator() {
                       <span className={`font-medium ${refinanceResult.totalSavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                         {formatCurrency(refinanceResult.totalSavings)}
                       </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600 dark:text-slate-400">回本周期：</span>
-                      <span className="font-medium">{refinanceResult.breakEvenMonths === Infinity ? '无法回本' : `${Math.ceil(refinanceResult.breakEvenMonths)} 个月`}</span>
                     </div>
                   </div>
                 </div>
