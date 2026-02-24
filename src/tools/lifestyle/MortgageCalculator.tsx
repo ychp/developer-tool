@@ -438,7 +438,7 @@ export function MortgageCalculator() {
   }, [prepayment.enabled, prepayment.amount, prepayment.atMonth, prepayment.type, combinedSchedule, baseSummary, loan, commercialLoan.schedule, fundLoan.schedule, commercialLoan.totalInterest, fundLoan.totalInterest])
 
   const refinanceResult = useMemo(() => {
-    if (!refinance.enabled || refinance.amount <= 0) return null
+    if (!refinance.enabled) return null
 
     let totalPrincipal = 0
     let originalRate = 0
@@ -453,6 +453,22 @@ export function MortgageCalculator() {
       totalPrincipal = loan.commercialAmount + loan.fundAmount
       originalRate = (loan.commercialAmount * loan.commercialRate + loan.fundAmount * loan.fundRate) / 
                      (loan.commercialAmount + loan.fundAmount)
+    }
+
+    if (refinance.amount <= 0) {
+      return {
+        monthlySavings: 0,
+        totalSavings: 0,
+        breakEvenMonths: 0,
+        worthIt: false,
+        refinanceAmount: 0,
+        originalMonthlyPayment: baseSummary.monthlyPayment,
+        newOriginalMonthlyPayment: baseSummary.monthlyPayment,
+        thirdPartyMonthlyPayment: 0,
+        newTotalMonthlyPayment: baseSummary.monthlyPayment,
+        remainingOriginalPrincipal: totalPrincipal,
+        isZeroAmount: true
+      }
     }
 
     const refinanceAmount = Math.min(refinance.amount, totalPrincipal)
@@ -860,54 +876,65 @@ export function MortgageCalculator() {
                 </div>
 
                 {refinanceResult && (
-                  <div className={`p-4 rounded-lg border ${refinanceResult.worthIt ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
-                    <h3 className={`font-medium mb-2 ${refinanceResult.worthIt ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
-                      {refinanceResult.worthIt ? '✓ 建议置换' : '✗ 不建议置换'}
-                    </h3>
-                    <div className="space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">置换金额：</span>
-                        <span className="font-medium">{formatCurrency(refinanceResult.refinanceAmount)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">剩余原贷款：</span>
-                        <span className="font-medium">{formatCurrency(refinanceResult.remainingOriginalPrincipal)}</span>
-                      </div>
-                      <div className="border-t border-slate-200 dark:border-slate-700 my-2 pt-2">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">月供对比</div>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">原月供：</span>
-                        <span className="font-medium">{formatCurrency(refinanceResult.originalMonthlyPayment)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">剩余原贷款月供：</span>
-                        <span className="font-medium">{formatCurrency(refinanceResult.newOriginalMonthlyPayment)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">三方贷款月供：</span>
-                        <span className="font-medium">{formatCurrency(refinanceResult.thirdPartyMonthlyPayment)}</span>
-                      </div>
-                      <div className="flex justify-between font-medium">
-                        <span className="text-slate-700 dark:text-slate-300">新总月供：</span>
-                        <span className={refinanceResult.monthlySavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                          {formatCurrency(refinanceResult.newTotalMonthlyPayment)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">月供变化：</span>
-                        <span className={`font-medium ${refinanceResult.monthlySavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                          {refinanceResult.monthlySavings > 0 ? '节省 ' : '增加 '}{formatCurrency(Math.abs(refinanceResult.monthlySavings))}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600 dark:text-slate-400">总节省：</span>
-                        <span className={`font-medium ${refinanceResult.totalSavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                          {formatCurrency(refinanceResult.totalSavings)}
-                        </span>
+                  refinanceResult.isZeroAmount ? (
+                    <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                      <h3 className="font-medium mb-2 text-slate-700 dark:text-slate-300">
+                        💡 请输入置换金额
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                        请输入要置换的贷款金额（万元）来查看分析结果
+                      </p>
+                    </div>
+                  ) : (
+                    <div className={`p-4 rounded-lg border ${refinanceResult.worthIt ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'}`}>
+                      <h3 className={`font-medium mb-2 ${refinanceResult.worthIt ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                        {refinanceResult.worthIt ? '✓ 建议置换' : '✗ 不建议置换'}
+                      </h3>
+                      <div className="space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">置换金额：</span>
+                          <span className="font-medium">{formatCurrency(refinanceResult.refinanceAmount)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">剩余原贷款：</span>
+                          <span className="font-medium">{formatCurrency(refinanceResult.remainingOriginalPrincipal)}</span>
+                        </div>
+                        <div className="border-t border-slate-200 dark:border-slate-700 my-2 pt-2">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">月供对比</div>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">原月供：</span>
+                          <span className="font-medium">{formatCurrency(refinanceResult.originalMonthlyPayment)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">剩余原贷款月供：</span>
+                          <span className="font-medium">{formatCurrency(refinanceResult.newOriginalMonthlyPayment)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">三方贷款月供：</span>
+                          <span className="font-medium">{formatCurrency(refinanceResult.thirdPartyMonthlyPayment)}</span>
+                        </div>
+                        <div className="flex justify-between font-medium">
+                          <span className="text-slate-700 dark:text-slate-300">新总月供：</span>
+                          <span className={refinanceResult.monthlySavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                            {formatCurrency(refinanceResult.newTotalMonthlyPayment)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">月供变化：</span>
+                          <span className={`font-medium ${refinanceResult.monthlySavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {refinanceResult.monthlySavings > 0 ? '节省 ' : '增加 '}{formatCurrency(Math.abs(refinanceResult.monthlySavings))}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600 dark:text-slate-400">总节省：</span>
+                          <span className={`font-medium ${refinanceResult.totalSavings > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                            {formatCurrency(refinanceResult.totalSavings)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )
                 )}
               </div>
             )}
