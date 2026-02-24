@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Calculator, Home, TrendingDown, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 
@@ -108,8 +108,39 @@ const calculateLoanSchedule = (
   }
 }
 
+const STORAGE_KEY = 'mortgage-calculator-data'
+
+interface StoredData {
+  loan: LoanConfig
+  prepayment: PrepaymentConfig
+  refinance: RefinanceConfig
+  expandedSection: string | null
+}
+
+const loadFromStorage = (): StoredData | null => {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY)
+    if (data) {
+      return JSON.parse(data)
+    }
+  } catch (e) {
+    console.error('Failed to load mortgage calculator data:', e)
+  }
+  return null
+}
+
+const saveToStorage = (data: StoredData) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch (e) {
+    console.error('Failed to save mortgage calculator data:', e)
+  }
+}
+
 export function MortgageCalculator() {
-  const [loan, setLoan] = useState<LoanConfig>({
+  const savedData = loadFromStorage()
+  
+  const [loan, setLoan] = useState<LoanConfig>(savedData?.loan || {
     loanType: 'commercial',
     commercialAmount: 1000000,
     commercialRate: 3.5,
@@ -120,14 +151,14 @@ export function MortgageCalculator() {
     repaymentType: 'equal-interest'
   })
 
-  const [prepayment, setPrepayment] = useState<PrepaymentConfig>({
+  const [prepayment, setPrepayment] = useState<PrepaymentConfig>(savedData?.prepayment || {
     enabled: false,
     amount: 100000,
     atMonth: 1,
     type: 'reduce-payment'
   })
 
-  const [refinance, setRefinance] = useState<RefinanceConfig>({
+  const [refinance, setRefinance] = useState<RefinanceConfig>(savedData?.refinance || {
     enabled: false,
     amount: 100000,
     newRate: 3.0,
@@ -137,7 +168,16 @@ export function MortgageCalculator() {
     repayMonth: 0
   })
 
-  const [expandedSection, setExpandedSection] = useState<string | null>(null)
+  const [expandedSection, setExpandedSection] = useState<string | null>(savedData?.expandedSection || null)
+
+  useEffect(() => {
+    saveToStorage({
+      loan,
+      prepayment,
+      refinance,
+      expandedSection
+    })
+  }, [loan, prepayment, refinance, expandedSection])
 
   const updateLoan = (field: keyof LoanConfig, value: number | RepaymentType | LoanType) => {
     setLoan(prev => ({ ...prev, [field]: value }))
