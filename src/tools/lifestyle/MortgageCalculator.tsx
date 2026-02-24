@@ -106,7 +106,7 @@ const calculateLoanSchedule = (
 
 export function MortgageCalculator() {
   const [loan, setLoan] = useState<LoanConfig>({
-    loanType: 'combined',
+    loanType: 'commercial',
     commercialAmount: 1000000,
     commercialRate: 3.6,
     commercialMonths: 360,
