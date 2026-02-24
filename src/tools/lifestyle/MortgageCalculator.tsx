@@ -842,7 +842,7 @@ export function MortgageCalculator() {
 
             <div className="space-y-4">
               <div className="p-3 rounded bg-sky-50 dark:bg-sky-900/20">
-                <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">首月月供</div>
+                <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">月供</div>
                 <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
                   {formatCurrency(baseSummary.monthlyPayment)}
                 </div>
