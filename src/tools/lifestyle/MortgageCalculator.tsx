@@ -152,8 +152,10 @@ export function MortgageCalculator() {
     
     if (section === 'prepayment') {
       setPrepayment(prev => ({ ...prev, enabled: newExpanded === section }))
+      setRefinance(prev => ({ ...prev, enabled: false }))
     } else if (section === 'refinance') {
       setRefinance(prev => ({ ...prev, enabled: newExpanded === section }))
+      setPrepayment(prev => ({ ...prev, enabled: false }))
     }
   }
 
