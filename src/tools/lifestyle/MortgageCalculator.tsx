@@ -495,31 +495,34 @@ export function MortgageCalculator() {
 
                 {prepayment.enabled && (
                   <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          提前还款金额（万元）
-                        </label>
-                        <input
-                          type="number"
-                          value={prepayment.amount / 10000}
-                          onChange={(e) => updatePrepayment('amount', (parseFloat(e.target.value) || 0) * 10000)}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                          还款期数
-                        </label>
-                        <input
-                          type="number"
-                          value={prepayment.atMonth}
-                          onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value) || 0)}
-                          min={1}
-                          max={combinedSchedule.length}
-                          className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        提前还款金额（万元）
+                      </label>
+                      <input
+                        type="number"
+                        value={prepayment.amount / 10000}
+                        onChange={(e) => updatePrepayment('amount', (parseFloat(e.target.value) || 0) * 10000)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        提前还款时间
+                      </label>
+                      <select
+                        value={prepayment.atMonth}
+                        onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value))}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      >
+                        <option value={12}>1 年后（第 12 期）</option>
+                        <option value={36}>3 年后（第 36 期）</option>
+                        <option value={60}>5 年后（第 60 期）</option>
+                        <option value={120}>10 年后（第 120 期）</option>
+                        <option value={180}>15 年后（第 180 期）</option>
+                        <option value={240}>20 年后（第 240 期）</option>
+                      </select>
                     </div>
 
                     <div>
