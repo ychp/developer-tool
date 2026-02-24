@@ -130,7 +130,7 @@ export function MortgageCalculator() {
     enabled: false,
     amount: 100000,
     newRate: 3.0,
-    newMonths: 360,
+    newMonths: 36,
     loanType: 'installment',
     averageDailyBalance: 0
   })
