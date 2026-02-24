@@ -234,7 +234,7 @@ export function MortgageCalculator() {
   }, [loan.loanType, loan.commercialAmount, loan.fundAmount, commercialLoan.totalPayment, fundLoan.totalPayment, commercialLoan.totalInterest, fundLoan.totalInterest, combinedSchedule])
 
   const prepaymentResult = useMemo(() => {
-    if (!prepayment.enabled || prepayment.atMonth >= combinedSchedule.length) {
+    if (!prepayment.enabled || prepayment.atMonth <= 0 || prepayment.atMonth >= combinedSchedule.length) {
       return null
     }
 
@@ -641,13 +641,13 @@ export function MortgageCalculator() {
                   <input
                     type="number"
                     value={prepayment.atMonth}
-                    onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value) || 0)}
+                    onChange={(e) => updatePrepayment('atMonth', Math.max(1, parseInt(e.target.value) || 1))}
                     min={1}
-                    max={combinedSchedule.length}
+                    max={combinedSchedule.length - 1}
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                   />
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    当前贷款总期数：{combinedSchedule.length} 期
+                    当前贷款总期数：{combinedSchedule.length} 期（提前还款期数需在 1-{combinedSchedule.length - 1} 之间）
                   </p>
                 </div>
 
