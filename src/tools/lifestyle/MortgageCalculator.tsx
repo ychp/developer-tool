@@ -896,24 +896,6 @@ export function MortgageCalculator() {
                   </p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    三方贷款还款方式
-                  </label>
-                  <select
-                    value={refinance.paymentMethod}
-                    onChange={(e) => updateRefinance('paymentMethod', e.target.value as 'equal-principal-interest' | 'interest-first')}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  >
-                    <option value="equal-principal-interest">等额本息</option>
-                    <option value="interest-first">先息后本</option>
-                  </select>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    {refinance.paymentMethod === 'equal-principal-interest' && '每月还款金额固定，包含本金和利息'}
-                    {refinance.paymentMethod === 'interest-first' && '按日计算利息，每月支付利息，到期还本'}
-                  </p>
-                </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -940,6 +922,24 @@ export function MortgageCalculator() {
                       className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                     />
                   </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    三方贷款还款方式
+                  </label>
+                  <select
+                    value={refinance.paymentMethod}
+                    onChange={(e) => updateRefinance('paymentMethod', e.target.value as 'equal-principal-interest' | 'interest-first')}
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  >
+                    <option value="equal-principal-interest">等额本息</option>
+                    <option value="interest-first">先息后本</option>
+                  </select>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {refinance.paymentMethod === 'equal-principal-interest' && '每月还款金额固定，包含本金和利息'}
+                    {refinance.paymentMethod === 'interest-first' && '按日计算利息，每月支付利息，到期还本'}
+                  </p>
                 </div>
 
                 {refinance.paymentMethod === 'interest-first' && (
