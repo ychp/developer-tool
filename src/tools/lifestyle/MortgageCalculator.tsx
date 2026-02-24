@@ -509,20 +509,19 @@ export function MortgageCalculator() {
 
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        提前还款时间
+                        提前还款期数
                       </label>
-                      <select
+                      <input
+                        type="number"
                         value={prepayment.atMonth}
-                        onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value))}
+                        onChange={(e) => updatePrepayment('atMonth', parseInt(e.target.value) || 0)}
+                        min={1}
+                        max={combinedSchedule.length}
                         className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      >
-                        <option value={12}>1 年后（第 12 期）</option>
-                        <option value={36}>3 年后（第 36 期）</option>
-                        <option value={60}>5 年后（第 60 期）</option>
-                        <option value={120}>10 年后（第 120 期）</option>
-                        <option value={180}>15 年后（第 180 期）</option>
-                        <option value={240}>20 年后（第 240 期）</option>
-                      </select>
+                      />
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        当前贷款总期数：{combinedSchedule.length} 期
+                      </p>
                     </div>
 
                     <div>
