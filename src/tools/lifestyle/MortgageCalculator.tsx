@@ -109,12 +109,29 @@ const calculateLoanSchedule = (
 }
 
 const STORAGE_KEY = 'mortgage-calculator-data'
+const REMEMBER_KEY = 'mortgage-calculator-remember'
 
 interface StoredData {
   loan: LoanConfig
   prepayment: PrepaymentConfig
   refinance: RefinanceConfig
   expandedSection: string | null
+}
+
+const loadRememberSetting = (): boolean => {
+  try {
+    return localStorage.getItem(REMEMBER_KEY) === 'true'
+  } catch (e) {
+    return false
+  }
+}
+
+const saveRememberSetting = (remember: boolean) => {
+  try {
+    localStorage.setItem(REMEMBER_KEY, String(remember))
+  } catch (e) {
+    console.error('Failed to save remember setting:', e)
+  }
 }
 
 const loadFromStorage = (): StoredData | null => {
@@ -137,8 +154,19 @@ const saveToStorage = (data: StoredData) => {
   }
 }
 
+const clearStorage = () => {
+  try {
+    localStorage.removeItem(STORAGE_KEY)
+  } catch (e) {
+    console.error('Failed to clear mortgage calculator data:', e)
+  }
+}
+
 export function MortgageCalculator() {
-  const savedData = loadFromStorage()
+  const shouldRemember = loadRememberSetting()
+  const savedData = shouldRemember ? loadFromStorage() : null
+  
+  const [rememberInput, setRememberInput] = useState(shouldRemember)
   
   const [loan, setLoan] = useState<LoanConfig>(savedData?.loan || {
     loanType: 'commercial',
@@ -171,13 +199,24 @@ export function MortgageCalculator() {
   const [expandedSection, setExpandedSection] = useState<string | null>(savedData?.expandedSection || null)
 
   useEffect(() => {
-    saveToStorage({
-      loan,
-      prepayment,
-      refinance,
-      expandedSection
-    })
-  }, [loan, prepayment, refinance, expandedSection])
+    if (rememberInput) {
+      saveToStorage({
+        loan,
+        prepayment,
+        refinance,
+        expandedSection
+      })
+    }
+  }, [loan, prepayment, refinance, expandedSection, rememberInput])
+
+  const toggleRememberInput = () => {
+    const newValue = !rememberInput
+    setRememberInput(newValue)
+    saveRememberSetting(newValue)
+    if (!newValue) {
+      clearStorage()
+    }
+  }
 
   const updateLoan = (field: keyof LoanConfig, value: number | RepaymentType | LoanType) => {
     setLoan(prev => ({ ...prev, [field]: value }))
@@ -788,6 +827,25 @@ export function MortgageCalculator() {
                     <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">首月最多，逐月递减</div>
                   </button>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                <div>
+                  <div className="font-medium text-sm text-slate-700 dark:text-slate-300">记住输入</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">下次打开时自动恢复上次的输入</div>
+                </div>
+                <button
+                  onClick={toggleRememberInput}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    rememberInput ? 'bg-sky-500' : 'bg-slate-200 dark:bg-slate-700'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      rememberInput ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
               </div>
             </div>
           </Card>
