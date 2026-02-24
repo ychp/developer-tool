@@ -4,8 +4,10 @@ import { Card } from '@/components/ui/card'
 
 type RepaymentType = 'equal-interest' | 'equal-principal'
 type PrepaymentType = 'reduce-payment' | 'shorten-term'
+type LoanType = 'commercial' | 'fund' | 'combined'
 
 interface LoanConfig {
+  loanType: LoanType
   commercialAmount: number
   commercialRate: number
   commercialYears: number
@@ -104,6 +106,7 @@ const calculateLoanSchedule = (
 
 export function MortgageCalculator() {
   const [loan, setLoan] = useState<LoanConfig>({
+    loanType: 'combined',
     commercialAmount: 1000000,
     commercialRate: 3.6,
     commercialYears: 30,
@@ -128,7 +131,7 @@ export function MortgageCalculator() {
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
 
-  const updateLoan = (field: keyof LoanConfig, value: number | RepaymentType) => {
+  const updateLoan = (field: keyof LoanConfig, value: number | RepaymentType | LoanType) => {
     setLoan(prev => ({ ...prev, [field]: value }))
   }
 
@@ -186,9 +189,24 @@ export function MortgageCalculator() {
   }, [commercialLoan.schedule, fundLoan.schedule])
 
   const baseSummary = useMemo(() => {
-    const totalLoan = loan.commercialAmount + loan.fundAmount
-    const totalPayment = commercialLoan.totalPayment + fundLoan.totalPayment
-    const totalInterest = commercialLoan.totalInterest + fundLoan.totalInterest
+    let totalLoan = 0
+    let totalPayment = 0
+    let totalInterest = 0
+
+    if (loan.loanType === 'commercial') {
+      totalLoan = loan.commercialAmount
+      totalPayment = commercialLoan.totalPayment
+      totalInterest = commercialLoan.totalInterest
+    } else if (loan.loanType === 'fund') {
+      totalLoan = loan.fundAmount
+      totalPayment = fundLoan.totalPayment
+      totalInterest = fundLoan.totalInterest
+    } else {
+      totalLoan = loan.commercialAmount + loan.fundAmount
+      totalPayment = commercialLoan.totalPayment + fundLoan.totalPayment
+      totalInterest = commercialLoan.totalInterest + fundLoan.totalInterest
+    }
+
     const monthlyPayment = combinedSchedule[0]?.payment || 0
 
     return {
@@ -197,7 +215,7 @@ export function MortgageCalculator() {
       totalInterest,
       monthlyPayment
     }
-  }, [loan.commercialAmount, loan.fundAmount, commercialLoan.totalPayment, fundLoan.totalPayment, combinedSchedule])
+  }, [loan.loanType, loan.commercialAmount, loan.fundAmount, commercialLoan.totalPayment, fundLoan.totalPayment, commercialLoan.totalInterest, fundLoan.totalInterest, combinedSchedule])
 
   const prepaymentResult = useMemo(() => {
     if (!prepayment.enabled || prepayment.atMonth >= combinedSchedule.length) {
@@ -352,90 +370,132 @@ export function MortgageCalculator() {
               贷款配置
             </h2>
 
-            <div className="space-y-6">
-              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                <h3 className="font-medium mb-4">商业贷款</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      贷款金额（万元）
-                    </label>
-                    <input
-                      type="number"
-                      value={loan.commercialAmount / 10000}
-                      onChange={(e) => updateLoan('commercialAmount', (parseFloat(e.target.value) || 0) * 10000)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      年利率（%）
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={loan.commercialRate}
-                      onChange={(e) => updateLoan('commercialRate', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      贷款年限
-                    </label>
-                    <input
-                      type="number"
-                      value={loan.commercialYears}
-                      onChange={(e) => updateLoan('commercialYears', parseInt(e.target.value) || 0)}
-                      min={1}
-                      max={30}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-                </div>
+            <div className="space-y-4 mb-6">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                贷款类型
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => updateLoan('loanType', 'commercial')}
+                  className={`p-3 rounded-lg border text-center transition-colors ${
+                    loan.loanType === 'commercial'
+                      ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
+                  }`}
+                >
+                  <div className="font-medium text-sm">商业贷款</div>
+                </button>
+                <button
+                  onClick={() => updateLoan('loanType', 'fund')}
+                  className={`p-3 rounded-lg border text-center transition-colors ${
+                    loan.loanType === 'fund'
+                      ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
+                  }`}
+                >
+                  <div className="font-medium text-sm">公积金贷款</div>
+                </button>
+                <button
+                  onClick={() => updateLoan('loanType', 'combined')}
+                  className={`p-3 rounded-lg border text-center transition-colors ${
+                    loan.loanType === 'combined'
+                      ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400'
+                      : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950'
+                  }`}
+                >
+                  <div className="font-medium text-sm">组合贷款</div>
+                </button>
               </div>
+            </div>
 
-              <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-                <h3 className="font-medium mb-4">公积金贷款</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      贷款金额（万元）
-                    </label>
-                    <input
-                      type="number"
-                      value={loan.fundAmount / 10000}
-                      onChange={(e) => updateLoan('fundAmount', (parseFloat(e.target.value) || 0) * 10000)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      年利率（%）
-                    </label>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={loan.fundRate}
-                      onChange={(e) => updateLoan('fundRate', parseFloat(e.target.value) || 0)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      贷款年限
-                    </label>
-                    <input
-                      type="number"
-                      value={loan.fundYears}
-                      onChange={(e) => updateLoan('fundYears', parseInt(e.target.value) || 0)}
-                      min={1}
-                      max={30}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                    />
+            <div className="space-y-6">
+              {(loan.loanType === 'commercial' || loan.loanType === 'combined') && (
+                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                  <h3 className="font-medium mb-4">商业贷款</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        贷款金额（万元）
+                      </label>
+                      <input
+                        type="number"
+                        value={loan.commercialAmount / 10000}
+                        onChange={(e) => updateLoan('commercialAmount', (parseFloat(e.target.value) || 0) * 10000)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        年利率（%）
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={loan.commercialRate}
+                        onChange={(e) => updateLoan('commercialRate', parseFloat(e.target.value) || 0)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        贷款年限
+                      </label>
+                      <input
+                        type="number"
+                        value={loan.commercialYears}
+                        onChange={(e) => updateLoan('commercialYears', parseInt(e.target.value) || 0)}
+                        min={1}
+                        max={30}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {(loan.loanType === 'fund' || loan.loanType === 'combined') && (
+                <div className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+                  <h3 className="font-medium mb-4">公积金贷款</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        贷款金额（万元）
+                      </label>
+                      <input
+                        type="number"
+                        value={loan.fundAmount / 10000}
+                        onChange={(e) => updateLoan('fundAmount', (parseFloat(e.target.value) || 0) * 10000)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        年利率（%）
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={loan.fundRate}
+                        onChange={(e) => updateLoan('fundRate', parseFloat(e.target.value) || 0)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        贷款年限
+                      </label>
+                      <input
+                        type="number"
+                        value={loan.fundYears}
+                        onChange={(e) => updateLoan('fundYears', parseInt(e.target.value) || 0)}
+                        min={1}
+                        max={30}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -713,26 +773,30 @@ export function MortgageCalculator() {
           <Card className="p-6">
             <h2 className="text-lg font-semibold mb-4">贷款构成</h2>
             <div className="space-y-3 text-sm">
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">商业贷款</span>
-                  <span className="font-medium">{formatCurrency(loan.commercialAmount)}</span>
+              {loan.loanType !== 'fund' && (
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-slate-600 dark:text-slate-400">商业贷款</span>
+                    <span className="font-medium">{formatCurrency(loan.commercialAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-500 text-xs">月供</span>
+                    <span className="text-xs">{formatCurrency(commercialLoan.schedule[0]?.payment || 0)}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-500 text-xs">月供</span>
-                  <span className="text-xs">{formatCurrency(commercialLoan.schedule[0]?.payment || 0)}</span>
+              )}
+              {loan.loanType !== 'commercial' && (
+                <div>
+                  <div className="flex justify-between mb-1">
+                    <span className="text-slate-600 dark:text-slate-400">公积金贷款</span>
+                    <span className="font-medium">{formatCurrency(loan.fundAmount)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500 dark:text-slate-500 text-xs">月供</span>
+                    <span className="text-xs">{formatCurrency(fundLoan.schedule[0]?.payment || 0)}</span>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="flex justify-between mb-1">
-                  <span className="text-slate-600 dark:text-slate-400">公积金贷款</span>
-                  <span className="font-medium">{formatCurrency(loan.fundAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500 dark:text-slate-500 text-xs">月供</span>
-                  <span className="text-xs">{formatCurrency(fundLoan.schedule[0]?.payment || 0)}</span>
-                </div>
-              </div>
+              )}
             </div>
           </Card>
 
