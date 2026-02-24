@@ -159,30 +159,38 @@ export function Layout() {
 
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favoriteTools')
+    let loadedFavorites = new Set<string>()
     if (savedFavorites) {
       try {
-        setFavorites(new Set(JSON.parse(savedFavorites)))
+        loadedFavorites = new Set(JSON.parse(savedFavorites))
+        setFavorites(loadedFavorites)
       } catch (e) {
         console.error('Failed to load favorites:', e)
       }
     }
 
-    const savedFavoritesOpen = localStorage.getItem('favoritesOpen')
-    if (savedFavoritesOpen !== null) {
-      setFavoritesOpen(savedFavoritesOpen === 'true')
-    }
-
     const savedRecentTools = localStorage.getItem('recentTools')
+    let loadedRecentTools: string[] = []
     if (savedRecentTools) {
       try {
-        setRecentTools(JSON.parse(savedRecentTools))
+        loadedRecentTools = JSON.parse(savedRecentTools)
+        setRecentTools(loadedRecentTools)
       } catch (e) {
         console.error('Failed to load recent tools:', e)
       }
     }
 
+    const currentPath = window.location.pathname
+    const isInFavorites = loadedFavorites.has(currentPath)
+    const isInRecent = loadedRecentTools.includes(currentPath)
+
+    const savedFavoritesOpen = localStorage.getItem('favoritesOpen')
+    if (savedFavoritesOpen !== null && !isInFavorites) {
+      setFavoritesOpen(savedFavoritesOpen === 'true')
+    }
+
     const savedRecentOpen = localStorage.getItem('recentOpen')
-    if (savedRecentOpen !== null) {
+    if (savedRecentOpen !== null && !isInRecent) {
       setRecentOpen(savedRecentOpen === 'true')
     }
   }, [])
