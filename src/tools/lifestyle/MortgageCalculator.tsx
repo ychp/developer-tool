@@ -10,10 +10,10 @@ interface LoanConfig {
   loanType: LoanType
   commercialAmount: number
   commercialRate: number
-  commercialYears: number
+  commercialMonths: number
   fundAmount: number
   fundRate: number
-  fundYears: number
+  fundMonths: number
   repaymentType: RepaymentType
 }
 
@@ -109,10 +109,10 @@ export function MortgageCalculator() {
     loanType: 'combined',
     commercialAmount: 1000000,
     commercialRate: 3.6,
-    commercialYears: 30,
+    commercialMonths: 360,
     fundAmount: 500000,
     fundRate: 3.1,
-    fundYears: 30,
+    fundMonths: 360,
     repaymentType: 'equal-interest'
   })
 
@@ -159,19 +159,19 @@ export function MortgageCalculator() {
     return calculateLoanSchedule(
       loan.commercialAmount,
       loan.commercialRate,
-      loan.commercialYears,
+      loan.commercialMonths / 12,
       loan.repaymentType
     )
-  }, [loan.commercialAmount, loan.commercialRate, loan.commercialYears, loan.repaymentType])
+  }, [loan.commercialAmount, loan.commercialRate, loan.commercialMonths, loan.repaymentType])
 
   const fundLoan = useMemo(() => {
     return calculateLoanSchedule(
       loan.fundAmount,
       loan.fundRate,
-      loan.fundYears,
+      loan.fundMonths / 12,
       loan.repaymentType
     )
-  }, [loan.fundAmount, loan.fundRate, loan.fundYears, loan.repaymentType])
+  }, [loan.fundAmount, loan.fundRate, loan.fundMonths, loan.repaymentType])
 
   const combinedSchedule = useMemo(() => {
     if (loan.loanType === 'commercial') {
@@ -454,14 +454,14 @@ export function MortgageCalculator() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        贷款年限
+                        贷款期数（月）
                       </label>
                       <input
                         type="number"
-                        value={loan.commercialYears}
-                        onChange={(e) => updateLoan('commercialYears', parseInt(e.target.value) || 0)}
+                        value={loan.commercialMonths}
+                        onChange={(e) => updateLoan('commercialMonths', parseInt(e.target.value) || 0)}
                         min={1}
-                        max={30}
+                        max={360}
                         className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                       />
                     </div>
@@ -498,14 +498,14 @@ export function MortgageCalculator() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        贷款年限
+                        贷款期数（月）
                       </label>
                       <input
                         type="number"
-                        value={loan.fundYears}
-                        onChange={(e) => updateLoan('fundYears', parseInt(e.target.value) || 0)}
+                        value={loan.fundMonths}
+                        onChange={(e) => updateLoan('fundMonths', parseInt(e.target.value) || 0)}
                         min={1}
-                        max={30}
+                        max={360}
                         className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                       />
                     </div>
