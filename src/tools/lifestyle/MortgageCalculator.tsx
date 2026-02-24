@@ -166,6 +166,14 @@ export function MortgageCalculator() {
   }, [loan.fundAmount, loan.fundRate, loan.fundYears, loan.repaymentType])
 
   const combinedSchedule = useMemo(() => {
+    if (loan.loanType === 'commercial') {
+      return commercialLoan.schedule
+    }
+    
+    if (loan.loanType === 'fund') {
+      return fundLoan.schedule
+    }
+    
     const schedule: PaymentSchedule[] = []
     const maxMonths = Math.max(
       commercialLoan.schedule.length,
@@ -186,7 +194,7 @@ export function MortgageCalculator() {
     }
 
     return schedule
-  }, [commercialLoan.schedule, fundLoan.schedule])
+  }, [loan.loanType, commercialLoan.schedule, fundLoan.schedule])
 
   const baseSummary = useMemo(() => {
     let totalLoan = 0
