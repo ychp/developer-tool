@@ -134,6 +134,7 @@ const menuGroups = [
       { path: '/system-prompt-generator', name: 'System Prompt 生成器', icon: Sparkles },
       { path: '/markdown-to-prompt', name: 'Markdown → Prompt', icon: FileText },
       { path: '/fewshot-formatter', name: 'Few-shot 格式化', icon: Layers },
+      { path: '/image-size-calculator', name: '图像尺寸计算器', icon: Calculator },
     ]
   },
 ]

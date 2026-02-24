@@ -43,6 +43,7 @@ const ImagePromptGenerator = lazy(() => import('./tools/ImagePromptGenerator').t
 const SystemPromptGenerator = lazy(() => import('./tools/SystemPromptGenerator').then(m => ({ default: m.SystemPromptGenerator })))
 const MarkdownToPrompt = lazy(() => import('./tools/MarkdownToPrompt').then(m => ({ default: m.MarkdownToPrompt })))
 const FewshotFormatter = lazy(() => import('./tools/FewshotFormatter').then(m => ({ default: m.FewshotFormatter })))
+const ImageSizeCalculator = lazy(() => import('./tools/ImageSizeCalculator').then(m => ({ default: m.ImageSizeCalculator })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -78,6 +79,7 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'system-prompt-generator', Component: SystemPromptGenerator },
   { path: 'markdown-to-prompt', Component: MarkdownToPrompt },
   { path: 'fewshot-formatter', Component: FewshotFormatter },
+  { path: 'image-size-calculator', Component: ImageSizeCalculator },
 ]
 
 const router = createBrowserRouter([
