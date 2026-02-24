@@ -29,7 +29,7 @@ interface RefinanceConfig {
   amount: number
   newRate: number
   newMonths: number
-  loanType: 'installment' | 'daily-interest'
+  paymentMethod: 'equal-principal-interest' | 'interest-first'
   averageDailyBalance?: number
   repayMonth?: number
 }
@@ -132,7 +132,7 @@ export function MortgageCalculator() {
     amount: 100000,
     newRate: 3.0,
     newMonths: 36,
-    loanType: 'installment',
+    paymentMethod: 'equal-principal-interest',
     averageDailyBalance: 0,
     repayMonth: 0
   })
@@ -475,7 +475,7 @@ export function MortgageCalculator() {
         remainingOriginalPrincipal: totalPrincipal,
         isZeroAmount: true,
         thirdPartyLoanDescription: '',
-        loanType: refinance.loanType,
+        paymentMethod: refinance.paymentMethod,
         actualRepayMonth: 0,
         thirdPartyTotalPayment: 0
       }
@@ -498,7 +498,7 @@ export function MortgageCalculator() {
     let thirdPartyLoanDescription = ''
     const actualRepayMonth = refinance.repayMonth && refinance.repayMonth > 0 ? refinance.repayMonth : refinance.newMonths
     
-    if (refinance.loanType === 'installment') {
+    if (refinance.paymentMethod === 'equal-principal-interest') {
       thirdPartyMonthlyPayment = refinanceAmount * newMonthlyRate * 
                                   Math.pow(1 + newMonthlyRate, refinance.newMonths) / 
                                   (Math.pow(1 + newMonthlyRate, refinance.newMonths) - 1)
@@ -514,20 +514,20 @@ export function MortgageCalculator() {
       } else {
         thirdPartyTotalPayment = thirdPartyMonthlyPayment * refinance.newMonths
       }
-    } else if (refinance.loanType === 'daily-interest') {
+    } else if (refinance.paymentMethod === 'interest-first') {
       const dailyRate = refinance.newRate / 100 / 365
       const daysPerMonth = 30
       
       if (refinance.averageDailyBalance && refinance.averageDailyBalance > 0) {
         thirdPartyMonthlyPayment = refinance.averageDailyBalance * dailyRate * daysPerMonth
         thirdPartyLoanDescription = refinance.repayMonth && refinance.repayMonth > 0
-                                     ? `随借随还（第${refinance.repayMonth}个月还清）`
-                                     : '随借随还'
+                                     ? `先息后本（第${refinance.repayMonth}个月还清）`
+                                     : '先息后本'
       } else {
         thirdPartyMonthlyPayment = refinanceAmount * dailyRate * daysPerMonth
         thirdPartyLoanDescription = refinance.repayMonth && refinance.repayMonth > 0
-                                     ? `按日计息（第${refinance.repayMonth}个月还清）`
-                                     : '按日计息'
+                                     ? `先息后本（第${refinance.repayMonth}个月还清）`
+                                     : '先息后本'
       }
       thirdPartyTotalPayment = thirdPartyMonthlyPayment * actualRepayMonth + refinanceAmount
     }
@@ -553,11 +553,11 @@ export function MortgageCalculator() {
       newTotalMonthlyPayment,
       remainingOriginalPrincipal,
       thirdPartyLoanDescription,
-      loanType: refinance.loanType,
+      paymentMethod: refinance.paymentMethod,
       actualRepayMonth,
       thirdPartyTotalPayment
     }
-  }, [refinance.enabled, refinance.amount, refinance.newRate, refinance.newMonths, refinance.loanType, refinance.averageDailyBalance, refinance.repayMonth, baseSummary, loan, combinedSchedule.length])
+  }, [refinance.enabled, refinance.amount, refinance.newRate, refinance.newMonths, refinance.paymentMethod, refinance.averageDailyBalance, refinance.repayMonth, baseSummary, loan, combinedSchedule.length])
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('zh-CN', {
@@ -898,115 +898,84 @@ export function MortgageCalculator() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    三方贷款类型
+                    三方贷款还款方式
                   </label>
                   <select
-                    value={refinance.loanType}
-                    onChange={(e) => updateRefinance('loanType', e.target.value as 'installment' | 'daily-interest')}
+                    value={refinance.paymentMethod}
+                    onChange={(e) => updateRefinance('paymentMethod', e.target.value as 'equal-principal-interest' | 'interest-first')}
                     className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
                   >
-                    <option value="installment">等额本息（固定利率）</option>
-                    <option value="daily-interest">按日计息（随借随还）</option>
+                    <option value="equal-principal-interest">等额本息</option>
+                    <option value="interest-first">先息后本</option>
                   </select>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    {refinance.loanType === 'installment' && '每月还款金额固定，适合稳定收入的用户'}
-                    {refinance.loanType === 'daily-interest' && '按日计算利息，可随时还款，适合灵活资金需求'}
+                    {refinance.paymentMethod === 'equal-principal-interest' && '每月还款金额固定，包含本金和利息'}
+                    {refinance.paymentMethod === 'interest-first' && '按日计算利息，每月支付利息，到期还本'}
                   </p>
                 </div>
 
-                {refinance.loanType === 'daily-interest' && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        预计日均余额（万元）
-                      </label>
-                      <input
-                        type="number"
-                        value={(refinance.averageDailyBalance || 0) / 10000}
-                        onChange={(e) => updateRefinance('averageDailyBalance', (parseFloat(e.target.value) || 0) * 10000)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        留空或输入 0 则使用全部置换金额
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        年利率（%）
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={refinance.newRate}
-                        onChange={(e) => updateRefinance('newRate', parseFloat(e.target.value) || 0)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        计划第几个月还清（可选）
-                      </label>
-                      <input
-                        type="number"
-                        value={refinance.repayMonth || 0}
-                        onChange={(e) => updateRefinance('repayMonth', parseInt(e.target.value) || 0)}
-                        min={1}
-                        placeholder="留空或输入 0 表示持续按日计息"
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        例如：计划在第12个月（一年）时还清全部三方贷款
-                      </p>
-                    </div>
-                  </>
-                )}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      年利率（%）
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={refinance.newRate}
+                      onChange={(e) => updateRefinance('newRate', parseFloat(e.target.value) || 0)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      贷款期数（月）
+                    </label>
+                    <input
+                      type="number"
+                      value={refinance.newMonths}
+                      onChange={(e) => updateRefinance('newMonths', parseInt(e.target.value) || 0)}
+                      min={1}
+                      max={360}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                  </div>
+                </div>
 
-                {refinance.loanType === 'installment' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        新贷款年利率（%）
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={refinance.newRate}
-                        onChange={(e) => updateRefinance('newRate', parseFloat(e.target.value) || 0)}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        三方贷款期数（月）
-                      </label>
-                      <input
-                        type="number"
-                        value={refinance.newMonths}
-                        onChange={(e) => updateRefinance('newMonths', parseInt(e.target.value) || 0)}
-                        min={1}
-                        max={360}
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        计划第几个月还清（可选）
-                      </label>
-                      <input
-                        type="number"
-                        value={refinance.repayMonth || 0}
-                        onChange={(e) => updateRefinance('repayMonth', parseInt(e.target.value) || 0)}
-                        min={1}
-                        max={refinance.newMonths}
-                        placeholder="留空或输入 0 表示按期数还清"
-                        className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
-                      />
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        例如：计划在第12个月（一年）时还清全部三方贷款
-                      </p>
-                    </div>
+                {refinance.paymentMethod === 'interest-first' && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      预计日均余额（万元）
+                    </label>
+                    <input
+                      type="number"
+                      value={(refinance.averageDailyBalance || 0) / 10000}
+                      onChange={(e) => updateRefinance('averageDailyBalance', (parseFloat(e.target.value) || 0) * 10000)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    />
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                      留空或输入 0 则使用全部置换金额
+                    </p>
                   </div>
                 )}
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    计划第几个月还清（可选）
+                  </label>
+                  <input
+                    type="number"
+                    value={refinance.repayMonth || 0}
+                    onChange={(e) => updateRefinance('repayMonth', parseInt(e.target.value) || 0)}
+                    min={1}
+                    max={refinance.newMonths}
+                    placeholder="留空或输入 0 表示按期数还清"
+                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    例如：计划在第12个月（一年）时还清全部三方贷款
+                  </p>
+                </div>
 
                 {refinanceResult && (
                   refinanceResult.isZeroAmount ? (
