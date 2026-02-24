@@ -108,7 +108,7 @@ export function MortgageCalculator() {
   const [loan, setLoan] = useState<LoanConfig>({
     loanType: 'commercial',
     commercialAmount: 1000000,
-    commercialRate: 3.6,
+    commercialRate: 3.5,
     commercialMonths: 360,
     fundAmount: 500000,
     fundRate: 3.1,
