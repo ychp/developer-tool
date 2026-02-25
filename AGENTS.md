@@ -10,7 +10,7 @@
 - React 19 + TypeScript + Vite
 - React Router v6
 - Tailwind CSS + Radix UI
-- 26+ 懒加载工具组件
+- 36+ 懒加载工具组件
 
 **核心特性**:
 - 路由懒加载（首屏仅 425KB）
@@ -24,14 +24,82 @@
 ```
 src/
 ├── components/ui/        # UI 基础组件
+├── components/tool/      # 工具相关可复用组件
 ├── contexts/            # React Context
 ├── hooks/              # 自定义 Hooks
 ├── layouts/            # 布局组件
 ├── pages/              # 页面组件
-├── tools/              # 工具组件 (26个)
+├── tools/              # 工具组件 (36个)
+│   ├── ai/             # AI 工具 (9个)
+│   ├── browser/        # 浏览器扩展 (1个)
+│   ├── convertor/      # 编码转换 (6个)
+│   ├── formatting/     # 格式化工具 (3个)
+│   ├── generator/      # 生成器 (4个)
+│   ├── lifestyle/      # 生活查询 (4个)
+│   ├── media/          # 媒体工具 (2个)
+│   ├── security/       # 加密工具 (2个)
+│   └── text/           # 文本处理 (4个)
 ├── lib/                # 工具函数
 └── main.tsx           # 入口文件
 ```
+
+## 工具分类清单
+
+### 1. 格式化 (3个)
+- JSON 格式化 (`/json-formatter`)
+- XML 格式化 (`/xml-formatter`)
+- 代码格式化 (`/code-formatter`)
+
+### 2. 编码转换 (4个)
+- Base64 编解码 (`/base64`)
+- URL 编解码 (`/url-encoder`)
+- JSON/YAML 转换 (`/json-yaml-converter`)
+- 图片 Base64 (`/image-base64`)
+
+### 3. 文本处理 (4个)
+- 正则测试 (`/regex-tester`)
+- 文本对比 (`/diff-checker`)
+- 字符串合并拆分 (`/string-join-split`)
+- 文本提取器 (`/text-extractor`)
+
+### 4. 转换工具 (3个)
+- 时间戳转换 (`/timestamp`)
+- 颜色转换 (`/color-converter`)
+- 进制转换 (`/number-converter`)
+
+### 5. 生成器 (4个)
+- UUID 生成 (`/uuid`)
+- 密码生成 (`/password-generator`)
+- 二维码生成 (`/qr-generator`)
+- Cron 生成 (`/cron-generator`)
+
+### 6. 媒体工具 (2个)
+- 图片链接预览 (`/image-link-preview`)
+- 表格预览 (`/table-viewer`)
+
+### 7. 加密工具 (2个)
+- 哈希生成 (`/hash-generator`)
+- JWT 解码 (`/jwt-decoder`)
+
+### 8. 浏览器扩展 (1个)
+- Chrome 扩展 (`/chrome-extensions`)
+
+### 9. 生活查询 (4个)
+- 手机号归属 (`/phone-number`)
+- 邮编查询 (`/postal-code`)
+- 电话区号 (`/area-code`)
+- 房贷计算器 (`/mortgage-calculator`)
+
+### 10. AI 工具 (9个)
+- Token 计算器 (`/token-calculator`)
+- AI 价格计算器 (`/ai-price-calculator`)
+- Function Calling 生成器 (`/function-calling-generator`)
+- JSON → Prompt (`/json-to-prompt`)
+- 图像 Prompt 生成器 (`/image-prompt-generator`)
+- System Prompt 生成器 (`/system-prompt-generator`)
+- Markdown → Prompt (`/markdown-to-prompt`)
+- Few-shot 格式化 (`/fewshot-formatter`)
+- 图像尺寸计算器 (`/image-size-calculator`)
 
 ## 开发规范
 
@@ -123,7 +191,7 @@ import { useState } from 'react'
 import { IconName } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { CopyButton } from '@/components/shared/CopyButton'
+import { CopyButton } from '@/components/tool/CopyButton'
 
 export function NewTool() {
   const [input, setInput] = useState('')
@@ -161,7 +229,7 @@ export function NewTool() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">输出</h2>
-            {output && <CopyButton content={output} />}
+            {output && <CopyButton text={output} />}
           </div>
           <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-900 min-h-[160px]">
             {output || '结果将显示在这里...'}
@@ -405,9 +473,9 @@ const handleProcess = () => {
 #### CopyButton - 复制按钮
 
 ```typescript
-import { CopyButton } from '@/components/shared/CopyButton'
+import { CopyButton } from '@/components/tool/CopyButton'
 
-<CopyButton content={textToCopy} />
+<CopyButton text={textToCopy} />
 ```
 
 #### Card - 卡片容器
@@ -574,11 +642,11 @@ const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 **示例**:
 ```
-feat(json-formatter): 添加 JSON 压缩功能
+feat(text-extractor): 添加去重、排序功能
 
-- 添加压缩按钮
-- 实现压缩算法
-- 更新 UI 布局
+- 添加去重开关
+- 添加升序/降序排序选项
+- 新增唯一数量统计指标
 
 Closes #123
 ```
@@ -623,4 +691,4 @@ npm run lint:fix
 
 ---
 
-最后更新：2025-02-10
+最后更新：2025-02-25
