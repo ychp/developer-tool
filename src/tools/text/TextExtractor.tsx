@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { CopyButton } from '@/components/tool/CopyButton'
 
 type ExtractMode = 'regex' | 'fixed' | 'range'
+type SortOrder = 'none' | 'asc' | 'desc'
 
 interface ExtractResult {
   extracted: string[]
@@ -14,6 +15,7 @@ interface ExtractResult {
     totalChars: number
     afterDeleteChars: number
     deletedChars: number
+    uniqueCount: number
   }
 }
 
@@ -26,6 +28,8 @@ export function TextExtractor() {
   const [rangeStart, setRangeStart] = useState(1)
   const [rangeEnd, setRangeEnd] = useState(10)
   const [rangeType, setRangeType] = useState<'line' | 'char'>('line')
+  const [enableDedupe, setEnableDedupe] = useState(false)
+  const [sortOrder, setSortOrder] = useState<SortOrder>('none')
   const [result, setResult] = useState<ExtractResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [separator, setSeparator] = useState('\n')
@@ -87,7 +91,7 @@ export function TextExtractor() {
           }
         }
 
-        const afterDelete = extracted.map((item) => {
+        let afterDelete = extracted.map((item) => {
           if (!deletePattern.trim()) return item
           if (deleteMode === 'fixed') {
             return item.split(deletePattern).join('')
@@ -101,6 +105,19 @@ export function TextExtractor() {
           }
         })
 
+        const uniqueSet = new Set(afterDelete)
+        const uniqueCount = uniqueSet.size
+
+        if (enableDedupe) {
+          afterDelete = Array.from(uniqueSet)
+        }
+
+        if (sortOrder === 'asc') {
+          afterDelete.sort((a, b) => a.localeCompare(b))
+        } else if (sortOrder === 'desc') {
+          afterDelete.sort((a, b) => b.localeCompare(a))
+        }
+
         const totalChars = extracted.reduce((sum, s) => sum + s.length, 0)
         const afterDeleteChars = afterDelete.reduce((sum, s) => sum + s.length, 0)
 
@@ -112,13 +129,14 @@ export function TextExtractor() {
             totalChars,
             afterDeleteChars,
             deletedChars: totalChars - afterDeleteChars,
+            uniqueCount,
           },
         }
       } catch (e) {
         throw new Error(e instanceof Error ? e.message : '提取失败')
       }
     }
-  }, [inputText, extractMode, extractPattern, deletePattern, deleteMode, rangeStart, rangeEnd, rangeType])
+  }, [inputText, extractMode, extractPattern, deletePattern, deleteMode, rangeStart, rangeEnd, rangeType, enableDedupe, sortOrder])
 
   const handleExtract = () => {
     setError(null)
@@ -140,6 +158,37 @@ export function TextExtractor() {
     setError(null)
     setExtractPattern('')
     setDeletePattern('')
+  }
+
+  const loadDemo = () => {
+    const demoText = `姓名:张三,年龄:25,邮箱:zhangsan@example.com
+姓名:李四,年龄:30,邮箱:lisi@example.com
+姓名:王五,年龄:28,邮箱:wangwu@example.com
+姓名:赵六,年龄:35,邮箱:zhaoliu@example.com
+姓名:张三,年龄:25,邮箱:zhangsan2@example.com
+电话:13800138000,电话:13900139000,电话:13700137000
+
+apple
+banana
+apple
+cherry
+banana
+apple
+
+123-456-7890
+987-654-3210
+555-123-4567
+123-456-7890`
+
+    setInputText(demoText)
+    setExtractPattern('\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b')
+    setDeleteMode('regex')
+    setDeletePattern('')
+    setExtractMode('regex')
+    setEnableDedupe(false)
+    setSortOrder('none')
+    setResult(null)
+    setError(null)
   }
 
   const handleExport = () => {
@@ -168,6 +217,9 @@ export function TextExtractor() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">输入文本</h2>
             <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={loadDemo}>
+                加载示例
+              </Button>
               <label className="cursor-pointer">
                 <input
                   type="file"
@@ -309,6 +361,44 @@ export function TextExtractor() {
               />
             </div>
 
+            <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">去重</label>
+                <button
+                  onClick={() => setEnableDedupe(!enableDedupe)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    enableDedupe ? 'bg-sky-500' : 'bg-slate-300 dark:bg-slate-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      enableDedupe ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">排序</label>
+                <div className="flex gap-2">
+                  {[
+                    { value: 'none' as const, label: '不排序' },
+                    { value: 'asc' as const, label: '升序 A-Z' },
+                    { value: 'desc' as const, label: '降序 Z-A' },
+                  ].map((order) => (
+                    <Button
+                      key={order.value}
+                      variant={sortOrder === order.value ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setSortOrder(order.value)}
+                    >
+                      {order.label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium mb-2">结果分隔符</label>
               <select
@@ -347,7 +437,7 @@ export function TextExtractor() {
                 统计信息
               </h2>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               <div className="p-4 rounded-lg bg-sky-50 dark:bg-sky-900/20">
                 <div className="text-2xl font-bold text-sky-600 dark:text-sky-400">
                   {result.stats.totalMatches}
@@ -371,6 +461,12 @@ export function TextExtractor() {
                   {result.stats.afterDeleteChars}
                 </div>
                 <div className="text-sm text-slate-500 dark:text-slate-400">最终字符数</div>
+              </div>
+              <div className="p-4 rounded-lg bg-rose-50 dark:bg-rose-900/20">
+                <div className="text-2xl font-bold text-rose-600 dark:text-rose-400">
+                  {result.stats.uniqueCount}
+                </div>
+                <div className="text-sm text-slate-500 dark:text-slate-400">唯一数量</div>
               </div>
             </div>
           </Card>
