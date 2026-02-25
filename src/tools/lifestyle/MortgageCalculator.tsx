@@ -47,6 +47,16 @@ const calculateEqualInterestPayment = (principal: number, monthlyRate: number, m
   return principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1)
 }
 
+const calculateNewMonthsShortenTerm = (principal: number, monthlyPayment: number, monthlyRate: number): number => {
+  if (monthlyRate === 0) return Math.ceil(principal / monthlyPayment)
+  
+  const denominator = monthlyPayment - monthlyRate * principal
+  if (denominator <= 0) return Infinity
+  
+  const newMonths = Math.log(monthlyPayment / denominator) / Math.log(1 + monthlyRate)
+  return Math.ceil(newMonths)
+}
+
 const calculateLoanSchedule = (
   principal: number,
   annualRate: number,
@@ -121,7 +131,7 @@ interface StoredData {
 const loadRememberSetting = (): boolean => {
   try {
     return localStorage.getItem(REMEMBER_KEY) === 'true'
-  } catch (e) {
+  } catch {
     return false
   }
 }
@@ -129,8 +139,8 @@ const loadRememberSetting = (): boolean => {
 const saveRememberSetting = (remember: boolean) => {
   try {
     localStorage.setItem(REMEMBER_KEY, String(remember))
-  } catch (e) {
-    console.error('Failed to save remember setting:', e)
+  } catch {
+    console.error('Failed to save remember setting')
   }
 }
 
@@ -140,8 +150,8 @@ const loadFromStorage = (): StoredData | null => {
     if (data) {
       return JSON.parse(data)
     }
-  } catch (e) {
-    console.error('Failed to load mortgage calculator data:', e)
+  } catch {
+    console.error('Failed to load mortgage calculator data')
   }
   return null
 }
@@ -149,16 +159,16 @@ const loadFromStorage = (): StoredData | null => {
 const saveToStorage = (data: StoredData) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-  } catch (e) {
-    console.error('Failed to save mortgage calculator data:', e)
+  } catch {
+    console.error('Failed to save mortgage calculator data')
   }
 }
 
 const clearStorage = () => {
   try {
     localStorage.removeItem(STORAGE_KEY)
-  } catch (e) {
-    console.error('Failed to clear mortgage calculator data:', e)
+  } catch {
+    console.error('Failed to clear mortgage calculator data')
   }
 }
 
@@ -438,8 +448,6 @@ export function MortgageCalculator() {
       const originalTotalPayment = baseSummary.totalPayment
       const paymentsBefore = combinedSchedule.slice(0, atMonth).reduce((sum: number, s: PaymentSchedule) => sum + s.payment, 0)
 
-      const originalMonthlyPayment = combinedSchedule[atMonth]?.payment || 0
-
       const beforeCommercial = commercialLoan.schedule[atMonth - 1]
       const beforeFund = fundLoan.schedule[atMonth - 1]
       
@@ -456,57 +464,144 @@ export function MortgageCalculator() {
         newFundPrincipal = beforeFund.balance - (prepayment.amount * (beforeFund.balance / totalBalance))
       }
 
-      const newSchedule: PaymentSchedule[] = []
-      
-      let commercialBalance = Math.max(0, newCommercialPrincipal)
-      let fundBalance = Math.max(0, newFundPrincipal)
-      let month = atMonth
+      let newSchedule: PaymentSchedule[] = []
+      let actualMonthsUsed = 0
 
-      while ((commercialBalance > 0.01 || fundBalance > 0.01) && month < combinedSchedule.length + atMonth) {
-        let payment = 0
-        let principalPaid = 0
-        let interest = 0
-        
-        if (loan.loanType === 'commercial') {
-          interest = commercialBalance * (loan.commercialRate / 100 / 12)
-          principalPaid = Math.min(originalMonthlyPayment - interest, commercialBalance)
-          commercialBalance -= principalPaid
-          payment = originalMonthlyPayment
-        } else if (loan.loanType === 'fund') {
-          interest = fundBalance * (loan.fundRate / 100 / 12)
-          principalPaid = Math.min(originalMonthlyPayment - interest, fundBalance)
-          fundBalance -= principalPaid
-          payment = originalMonthlyPayment
+      if (loan.loanType === 'commercial') {
+        if (loan.repaymentType === 'equal-interest') {
+          const originalMonthlyPayment = commercialLoan.schedule[0].payment
+          const monthlyRate = loan.commercialRate / 100 / 12
+          const newMonths = calculateNewMonthsShortenTerm(newCommercialPrincipal, originalMonthlyPayment, monthlyRate)
+          actualMonthsUsed = Math.min(newMonths, remainingMonths)
+          
+          newSchedule = calculateLoanSchedule(
+            newCommercialPrincipal,
+            loan.commercialRate,
+            actualMonthsUsed / 12,
+            'equal-interest',
+            atMonth
+          ).schedule
         } else {
-          const beforeTotalBalance = beforeCommercial.balance + beforeFund.balance
+          const monthlyPrincipal = loan.commercialAmount / loan.commercialMonths
+          actualMonthsUsed = Math.ceil(newCommercialPrincipal / monthlyPrincipal)
           
-          const commercialPayment = originalMonthlyPayment * (beforeCommercial.balance / beforeTotalBalance)
-          const commercialInterest = commercialBalance * (loan.commercialRate / 100 / 12)
-          const commercialPrincipalPaid = Math.min(commercialPayment - commercialInterest, commercialBalance)
-          commercialBalance -= commercialPrincipalPaid
-          
-          const fundPayment = originalMonthlyPayment * (beforeFund.balance / beforeTotalBalance)
-          const fundInterest = fundBalance * (loan.fundRate / 100 / 12)
-          const fundPrincipalPaid = Math.min(fundPayment - fundInterest, fundBalance)
-          fundBalance -= fundPrincipalPaid
-          
-          payment = commercialPayment + fundPayment
-          principalPaid = commercialPrincipalPaid + fundPrincipalPaid
-          interest = commercialInterest + fundInterest
+          newSchedule = calculateLoanSchedule(
+            newCommercialPrincipal,
+            loan.commercialRate,
+            actualMonthsUsed / 12,
+            'equal-principal',
+            atMonth
+          ).schedule
         }
+      } else if (loan.loanType === 'fund') {
+        if (loan.repaymentType === 'equal-interest') {
+          const originalMonthlyPayment = fundLoan.schedule[0].payment
+          const monthlyRate = loan.fundRate / 100 / 12
+          const newMonths = calculateNewMonthsShortenTerm(newFundPrincipal, originalMonthlyPayment, monthlyRate)
+          actualMonthsUsed = Math.min(newMonths, remainingMonths)
+          
+          newSchedule = calculateLoanSchedule(
+            newFundPrincipal,
+            loan.fundRate,
+            actualMonthsUsed / 12,
+            'equal-interest',
+            atMonth
+          ).schedule
+        } else {
+          const monthlyPrincipal = loan.fundAmount / loan.fundMonths
+          actualMonthsUsed = Math.ceil(newFundPrincipal / monthlyPrincipal)
+          
+          newSchedule = calculateLoanSchedule(
+            newFundPrincipal,
+            loan.fundRate,
+            actualMonthsUsed / 12,
+            'equal-principal',
+            atMonth
+          ).schedule
+        }
+      } else {
+        const commercialMonthlyRate = loan.commercialRate / 100 / 12
+        const fundMonthlyRate = loan.fundRate / 100 / 12
         
-        newSchedule.push({
-          month: month + 1,
-          payment,
-          principal: principalPaid,
-          interest,
-          balance: Math.max(0, commercialBalance + fundBalance)
-        })
-
-        month++
+        if (loan.repaymentType === 'equal-interest') {
+          const commercialMonthlyPayment = commercialLoan.schedule[0].payment
+          const fundMonthlyPayment = fundLoan.schedule[0].payment
+          
+          const commercialNewMonths = calculateNewMonthsShortenTerm(newCommercialPrincipal, commercialMonthlyPayment, commercialMonthlyRate)
+          const fundNewMonths = calculateNewMonthsShortenTerm(newFundPrincipal, fundMonthlyPayment, fundMonthlyRate)
+          
+          actualMonthsUsed = Math.max(commercialNewMonths, fundNewMonths)
+          
+          const commercialSchedule = calculateLoanSchedule(
+            newCommercialPrincipal,
+            loan.commercialRate,
+            actualMonthsUsed / 12,
+            'equal-interest',
+            atMonth
+          ).schedule
+          
+          const fundSchedule = calculateLoanSchedule(
+            newFundPrincipal,
+            loan.fundRate,
+            actualMonthsUsed / 12,
+            'equal-interest',
+            atMonth
+          ).schedule
+          
+          newSchedule = []
+          for (let i = 0; i < actualMonthsUsed; i++) {
+            const comm = commercialSchedule[i] || { payment: 0, principal: 0, interest: 0, balance: 0 }
+            const fund = fundSchedule[i] || { payment: 0, principal: 0, interest: 0, balance: 0 }
+            
+            newSchedule.push({
+              month: atMonth + i + 1,
+              payment: comm.payment + fund.payment,
+              principal: comm.principal + fund.principal,
+              interest: comm.interest + fund.interest,
+              balance: comm.balance + fund.balance
+            })
+          }
+        } else {
+          const commercialMonthlyPrincipal = loan.commercialAmount / loan.commercialMonths
+          const fundMonthlyPrincipal = loan.fundAmount / loan.fundMonths
+          
+          const commercialNewMonths = Math.ceil(newCommercialPrincipal / commercialMonthlyPrincipal)
+          const fundNewMonths = Math.ceil(newFundPrincipal / fundMonthlyPrincipal)
+          
+          actualMonthsUsed = Math.max(commercialNewMonths, fundNewMonths)
+          
+          const commercialSchedule = calculateLoanSchedule(
+            newCommercialPrincipal,
+            loan.commercialRate,
+            actualMonthsUsed / 12,
+            'equal-principal',
+            atMonth
+          ).schedule
+          
+          const fundSchedule = calculateLoanSchedule(
+            newFundPrincipal,
+            loan.fundRate,
+            actualMonthsUsed / 12,
+            'equal-principal',
+            atMonth
+          ).schedule
+          
+          newSchedule = []
+          for (let i = 0; i < actualMonthsUsed; i++) {
+            const comm = commercialSchedule[i] || { payment: 0, principal: 0, interest: 0, balance: 0 }
+            const fund = fundSchedule[i] || { payment: 0, principal: 0, interest: 0, balance: 0 }
+            
+            newSchedule.push({
+              month: atMonth + i + 1,
+              payment: comm.payment + fund.payment,
+              principal: comm.principal + fund.principal,
+              interest: comm.interest + fund.interest,
+              balance: comm.balance + fund.balance
+            })
+          }
+        }
       }
 
-      const actualMonthsUsed = newSchedule.length
       const newTotalPayment = paymentsBefore + prepayment.amount + newSchedule.reduce((sum: number, s: PaymentSchedule) => sum + s.payment, 0)
       const monthsSaved = remainingMonths - actualMonthsUsed
 
@@ -515,7 +610,7 @@ export function MortgageCalculator() {
         savings: originalTotalPayment - newTotalPayment,
         newTotalPayment,
         originalRemainingPayment: combinedSchedule.slice(atMonth).reduce((sum: number, s: PaymentSchedule) => sum + s.payment, 0),
-        newMonthlyPayment: originalMonthlyPayment,
+        newMonthlyPayment: combinedSchedule[atMonth]?.payment || 0,
         originalMonthlyPayment: combinedSchedule[atMonth]?.payment || 0,
         monthsSaved
       }
