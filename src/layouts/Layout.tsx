@@ -70,6 +70,7 @@ const menuGroups = [
       { path: '/regex-tester', name: '正则测试', icon: FileSearch },
       { path: '/diff-checker', name: '文本对比', icon: FileDiff },
       { path: '/string-join-split', name: '字符串合并拆分', icon: WrapText },
+      { path: '/text-extractor', name: '文本提取器', icon: FileSearch },
     ]
   },
   {

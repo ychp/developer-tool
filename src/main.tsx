@@ -45,6 +45,7 @@ const MarkdownToPrompt = lazy(() => import('./tools/ai/MarkdownToPrompt').then(m
 const FewshotFormatter = lazy(() => import('./tools/ai/FewshotFormatter').then(m => ({ default: m.FewshotFormatter })))
 const ImageSizeCalculator = lazy(() => import('./tools/ai/ImageSizeCalculator').then(m => ({ default: m.ImageSizeCalculator })))
 const MortgageCalculator = lazy(() => import('./tools/lifestyle/MortgageCalculator').then(m => ({ default: m.MortgageCalculator })))
+const TextExtractor = lazy(() => import('./tools/text/TextExtractor').then(m => ({ default: m.TextExtractor })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -82,6 +83,7 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'fewshot-formatter', Component: FewshotFormatter },
   { path: 'image-size-calculator', Component: ImageSizeCalculator },
   { path: 'mortgage-calculator', Component: MortgageCalculator },
+  { path: 'text-extractor', Component: TextExtractor },
 ]
 
 const router = createBrowserRouter([
