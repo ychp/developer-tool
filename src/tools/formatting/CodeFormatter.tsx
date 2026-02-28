@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ToolPageHeader } from '@/components/tool/ToolPageHeader'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { format as formatSQL } from 'sql-formatter'
 
-type Language = 'javascript' | 'json' | 'html' | 'css' | 'xml' | 'java'
+type Language = 'javascript' | 'json' | 'html' | 'css' | 'xml' | 'java' | 'sql'
 
 const LANGUAGE_LABELS: Record<Language, string> = {
   javascript: 'JavaScript',
@@ -14,6 +15,7 @@ const LANGUAGE_LABELS: Record<Language, string> = {
   css: 'CSS',
   xml: 'XML',
   java: 'Java',
+  sql: 'SQL',
 }
 
 export function CodeFormatter() {
@@ -383,6 +385,31 @@ export function CodeFormatter() {
       .trim()
   }
 
+  const formatSQLCode = (code: string): string => {
+    try {
+      return formatSQL(code, {
+        language: 'sql',
+        tabWidth: 4,
+        keywordCase: 'upper',
+        functionCase: 'upper',
+        indentStyle: 'standard',
+        logicalOperatorNewline: 'before',
+      })
+    } catch {
+      return code
+    }
+  }
+
+  const minifySQL = (code: string): string => {
+    return code
+      .replace(/--.*$/gm, '')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/\s*,\s*/g, ',')
+      .replace(/\s*([(),])\s*/g, '$1')
+      .trim()
+  }
+
   const format = () => {
     if (!input.trim()) return
 
@@ -405,6 +432,9 @@ export function CodeFormatter() {
         break
       case 'java':
         result = formatJava(input)
+        break
+      case 'sql':
+        result = formatSQLCode(input)
         break
     }
     setOutput(result)
@@ -433,6 +463,9 @@ export function CodeFormatter() {
       case 'java':
         result = minifyJava(input)
         break
+      case 'sql':
+        result = minifySQL(input)
+        break
     }
     setOutput(result)
   }
@@ -456,6 +489,7 @@ export function CodeFormatter() {
       css: '.container{width:100%;max-width:1200px;margin:0 auto;padding:20px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1)}.btn{padding:12px 24px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer}',
       xml: '<?xml version="1.0" encoding="UTF-8"?><config><app name="devtools" version="2.0"><features><feature id="fmt">代码格式化</feature><feature id="min">代码压缩</feature></features><settings><theme>dark</theme><autosave>true</autosave></settings></app></config>',
       java: `public class Calculator{private int result;public Calculator(){this.result=0;}public int add(int a,int b){return a+b;}public int multiply(int a,int b){return a*b;}public static void main(String[] args){Calculator calc=new Calculator();int sum=calc.add(10,5);int product=calc.multiply(10,5);System.out.println("Sum: "+sum);System.out.println("Product: "+product);}}`,
+      sql: `select u.id,u.name,u.email,count(o.id) as order_count,sum(o.total_amount) as total_spent from users u left join orders o on u.id=o.user_id where u.created_at>'2024-01-01' and u.status='active' group by u.id,u.name,u.email having count(o.id)>5 order by total_spent desc limit 10`,
     }
     setInput(samples[language])
   }
@@ -645,7 +679,7 @@ export function CodeFormatter() {
         <CardContent className="text-sm text-slate-600 dark:text-slate-400 space-y-2">
           <p>• <strong>美化格式</strong>：自动缩进和换行，提升代码可读性</p>
           <p>• <strong>压缩代码</strong>：去除空格和换行，减小文件体积</p>
-          <p>• <strong>支持语言</strong>：JavaScript、JSON、HTML、CSS、XML、Java</p>
+          <p>• <strong>支持语言</strong>：JavaScript、JSON、HTML、CSS、XML、Java、SQL</p>
           <p>• <strong>缩进设置</strong>：统一使用 4 个空格缩进</p>
           <p>• <strong>交换</strong>：将输出结果作为输入继续处理</p>
           <p>• <strong>统计</strong>：显示行数、大小和压缩率</p>

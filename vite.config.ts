@@ -109,6 +109,9 @@ export default defineConfig({
             if (id.includes('dayjs')) {
               return 'vendor-dayjs'
             }
+            if (id.includes('sql-formatter')) {
+              return 'vendor-sql-formatter'
+            }
             return 'vendor'
           }
         },
