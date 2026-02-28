@@ -171,28 +171,13 @@ export function Layout() {
     }
 
     const savedRecentTools = localStorage.getItem('recentTools')
-    let loadedRecentTools: string[] = []
     if (savedRecentTools) {
       try {
-        loadedRecentTools = JSON.parse(savedRecentTools)
+        const loadedRecentTools = JSON.parse(savedRecentTools)
         setRecentTools(loadedRecentTools)
       } catch (e) {
         console.error('Failed to load recent tools:', e)
       }
-    }
-
-    const currentPath = window.location.pathname
-    const isInFavorites = loadedFavorites.has(currentPath)
-    const isInRecent = loadedRecentTools.includes(currentPath)
-
-    const savedFavoritesOpen = localStorage.getItem('favoritesOpen')
-    if (savedFavoritesOpen !== null && !isInFavorites) {
-      setFavoritesOpen(savedFavoritesOpen === 'true')
-    }
-
-    const savedRecentOpen = localStorage.getItem('recentOpen')
-    if (savedRecentOpen !== null && !isInRecent) {
-      setRecentOpen(savedRecentOpen === 'true')
     }
   }, [])
 
@@ -201,16 +186,8 @@ export function Layout() {
   }, [favorites])
 
   useEffect(() => {
-    localStorage.setItem('favoritesOpen', String(favoritesOpen))
-  }, [favoritesOpen])
-
-  useEffect(() => {
     localStorage.setItem('recentTools', JSON.stringify(recentTools))
   }, [recentTools])
-
-  useEffect(() => {
-    localStorage.setItem('recentOpen', String(recentOpen))
-  }, [recentOpen])
 
   useEffect(() => {
     const currentPath = location.pathname
@@ -262,8 +239,6 @@ export function Layout() {
     }
     closeTimeoutRef.current = setTimeout(() => {
       setHoveredGroup(null)
-      setFavoritesOpen(false)
-      setRecentOpen(false)
     }, 100)
   }
 
@@ -292,7 +267,9 @@ export function Layout() {
           setSidebarOpen(false)
         } else if (hoveredGroup) {
           setHoveredGroup(null)
+        } else if (favoritesOpen) {
           setFavoritesOpen(false)
+        } else if (recentOpen) {
           setRecentOpen(false)
         }
         return
