@@ -103,6 +103,463 @@ src/
 
 ## 开发规范
 
+### React.js 代码规范
+
+#### 命名规范
+
+**组件命名**
+- 组件名称使用 **大驼峰命名法 (PascalCase)**
+- 组件名应与文件名保持一致
+- 避免使用缩写或模糊的命名
+
+```typescript
+// ✅ 正确
+export function UserProfile() { }
+export function JsonFormatter() { }
+
+// ❌ 错误
+export function userProfile() { }
+export function user_profile() { }
+```
+
+**变量和函数命名**
+- 变量、函数使用 **小驼峰命名法 (camelCase)**
+- 常量使用 **全大写 + 下划线**
+- 事件处理函数以 `handle` 前缀开头
+- 布尔值变量使用 `is`/`has`/`should` 前缀
+
+```typescript
+// ✅ 正确
+const userName = 'John'
+const handleSubmit = () => { }
+const MAX_COUNT = 100
+const isLoading = false
+const hasError = true
+
+// ❌ 错误
+const username = 'John'
+const HandleSubmit = () => { }
+const max_count = 100
+const loading = false
+```
+
+**自定义 Hook 命名**
+- 自定义 Hook 必须以 `use` 开头
+- 使用 camelCase 命名
+
+```typescript
+// ✅ 正确
+export function useFetchData() { }
+export function useLocalStorage() { }
+
+// ❌ 错误
+export function fetchUserData() { }
+export function getLocalStorage() { }
+```
+
+#### 组件规范
+
+**使用函数组件**
+- 优先使用函数组件和 Hooks
+- 避免使用类组件
+
+```typescript
+// ✅ 正确
+export function MyComponent() {
+  const [state, setState] = useState('')
+  return <div>{state}</div>
+}
+
+// ❌ 避免
+export class MyComponent extends React.Component {
+  // ...
+}
+```
+
+**返回值规范**
+- 组件必须只返回一个 DOM 元素
+- 可以使用 Fragment (`<></>`) 或 `<div>` 包装
+- 没有子内容的标签必须自闭合
+
+```typescript
+// ✅ 正确
+export function MyComponent() {
+  return (
+    <>
+      <h1>Title</h1>
+      <p>Content</p>
+    </>
+  )
+}
+
+// ✅ 正确
+export function Input() {
+  return <input type="text" />
+}
+
+// ❌ 错误 - 多个根元素
+export function MyComponent() {
+  return (
+    <h1>Title</h1>
+    <p>Content</p>
+  )
+}
+```
+
+**JSX 规范**
+- 超过一行的 JSX 必须使用括号括起来
+- Props 使用 camelCase
+- 使用布尔属性时，值为 true 可以省略
+
+```typescript
+// ✅ 正确
+export function MyComponent() {
+  return (
+    <div className="container">
+      <Button disabled={isLoading} onClick={handleSubmit}>
+        Submit
+      </Button>
+    </div>
+  )
+}
+
+// ✅ 正确 - 布尔属性省略值
+<Button disabled />
+<Input required />
+
+// ❌ 错误 - 缺少括号
+export function MyComponent() {
+  return <div className="container">
+    <Button>Click</Button>
+  </div>
+}
+```
+
+#### Hooks 规则
+
+**Hook 调用规则**
+- 只在组件顶层调用 Hook
+- 只在 React 函数组件或自定义 Hook 中调用 Hook
+- 不能在循环、条件语句或嵌套函数中调用 Hook
+- 必须在任何早期 return 之前调用 Hook
+
+```typescript
+// ✅ 正确
+export function MyComponent() {
+  const [state, setState] = useState('')
+  const { data } = useFetchData()
+
+  if (someCondition) {
+    return <div>Loading...</div>
+  }
+
+  return <div>{state}</div>
+}
+
+// ❌ 错误 - 在条件语句中调用 Hook
+export function MyComponent() {
+  if (someCondition) {
+    const [state, setState] = useState('') // 错误！
+  }
+  return <div></div>
+}
+
+// ❌ 错误 - 在循环中调用 Hook
+export function MyComponent({ items }) {
+  items.forEach(item => {
+    const [value, setValue] = useState(item) // 错误！
+  })
+  return <div></div>
+}
+```
+
+**自定义 Hook 规范**
+- 必须以 `use` 开头
+- 使用 TypeScript 定义返回类型
+- 保持单一职责
+
+```typescript
+// ✅ 正确
+interface UseLocalStorageReturn<T> {
+  value: T
+  setValue: (value: T) => void
+}
+
+export function useLocalStorage<T>(key: string, initialValue: T): UseLocalStorageReturn<T> {
+  const [value, setValue] = useState<T>(initialValue)
+  // ...
+  return { value, setValue }
+}
+```
+
+#### TypeScript 规范
+
+**类型定义**
+- 使用 `interface` 定义对象类型
+- 使用 `type` 定义联合类型、交叉类型
+- 避免使用 `any`，优先使用 `unknown`
+- 导出会被外部使用的 Props 类型
+
+```typescript
+// ✅ 正确 - 使用 interface
+interface ButtonProps {
+  label: string
+  disabled?: boolean
+  onClick?: () => void
+}
+
+export function Button({ label, disabled = false, onClick }: ButtonProps) {
+  return <button disabled={onClick}>{label}</button>
+}
+
+// ✅ 正确 - 使用 type
+type Status = 'loading' | 'success' | 'error'
+type Theme = 'light' | 'dark'
+
+// ❌ 错误 - 使用 any
+function processData(data: any) { }
+```
+
+**类型导出**
+- 对于需要被外部使用的组件，始终导出其 Props 类型
+- 使用 Type-Only 导出避免运行时依赖
+
+```typescript
+// ✅ 正确 - 导出 Props 类型
+export interface UserCardProps {
+  user: User
+  onEdit?: (id: number) => void
+}
+
+export function UserCard({ user, onEdit }: UserCardProps) {
+  return <div>{user.name}</div>
+}
+
+// ✅ 正确 - Type-Only 导出
+import type { ButtonProps } from './Button'
+export type { UserCardProps }
+```
+
+**泛型使用**
+- 合理使用泛型提高组件复用性
+- 泛型参数使用有意义的首字母大写命名
+
+```typescript
+// ✅ 正确
+interface ListProps<T> {
+  items: T[]
+  renderItem: (item: T) => React.ReactNode
+}
+
+export function List<T>({ items, renderItem }: ListProps<T>) {
+  return <ul>{items.map(renderItem)}</ul>
+}
+```
+
+#### 性能优化规范
+
+**React.memo**
+- 使用 `React.memo` 包装纯组件，避免不必要的重新渲染
+- 对于大型列表使用虚拟化 (react-window/react-virtualized)
+
+```typescript
+// ✅ 正确
+export const ExpensiveComponent = React.memo(({ data, onUpdate }) => {
+  return <div>{/* 复杂渲染逻辑 */}</div>
+})
+```
+
+**useMemo**
+- 使用 `useMemo` 缓存昂贵的计算结果
+- 不要过度使用，只有计算确实昂贵时才使用
+
+```typescript
+// ✅ 正确
+const sortedList = useMemo(() => {
+  return list.sort((a, b) => a.value - b.value)
+}, [list])
+```
+
+**useCallback**
+- 使用 `useCallback` 缓存传递给子组件的函数
+- 避免在渲染中创建新函数导致子组件不必要地重新渲染
+
+```typescript
+// ✅ 正确
+const handleClick = useCallback(() => {
+  doSomething(dependency)
+}, [dependency])
+
+return <ChildComponent onClick={handleClick} />
+```
+
+#### 样式规范
+
+**CSS-in-JS**
+- 推荐使用 Tailwind CSS（项目默认）
+- 避免在组件中写内联样式，除非是动态样式
+
+```typescript
+// ✅ 正确 - 使用 Tailwind
+<div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 rounded-lg">
+  Content
+</div>
+
+// ✅ 正确 - 动态样式使用内联
+<div style={{ width: `${progress}%` }}>Progress</div>
+
+// ❌ 错误 - 静态样式使用内联
+<div style={{ padding: '16px', backgroundColor: 'white' }}>Content</div>
+```
+
+**深色模式**
+- 使用 `dark:` 前缀支持深色模式
+- 确保所有颜色都有对应的深色模式变体
+
+```typescript
+// ✅ 正确
+<div className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+  支持深色模式的内容
+</div>
+```
+
+#### 错误处理规范
+
+**错误边界**
+- 为应用添加错误边界捕获组件树中的错误
+- 记录错误信息并显示降级 UI
+
+```typescript
+// ✅ 正确
+class ErrorBoundary extends React.Component {
+  state = { hasError: false }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('Error:', error, info)
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Something went wrong</div>
+    }
+    return this.props.children
+  }
+}
+```
+
+**用户输入验证**
+- 在状态更新前验证用户输入
+- 提供清晰的错误信息
+
+```typescript
+// ✅ 正确
+const handleProcess = () => {
+  if (!input.trim()) {
+    setError('请输入内容')
+    return
+  }
+
+  try {
+    // 处理逻辑
+    setError(null)
+  } catch (error) {
+    setError(error instanceof Error ? error.message : '处理失败')
+  }
+}
+```
+
+#### 代码组织规范
+
+**导入顺序**
+- 按以下顺序组织导入：核心库 → 第三方库 → 本地组件
+- 使用空行分隔不同类型的导入
+
+```typescript
+// ✅ 正确
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { CopyButton } from '@/components/tool/CopyButton'
+import { useTheme } from '@/contexts/ThemeContext'
+```
+
+**文件结构**
+- 相关文件组织在同一目录下
+- 按功能或模块划分目录结构
+
+```
+components/
+  UserProfile/
+    UserProfile.tsx      # 组件实现
+    UserProfile.test.tsx # 测试文件
+    index.ts             # 导出文件
+```
+
+#### 可访问性规范
+
+**语义化 HTML**
+- 使用语义化 HTML 标签
+- 为交互元素添加适当的 role 和 aria-* 属性
+
+```typescript
+// ✅ 正确
+<button
+  type="button"
+  role="button"
+  aria-label="关闭对话框"
+  onClick={onClose}
+>
+  <XIcon />
+</button>
+
+<nav aria-label="主导航">
+  <ul>
+    <li><a href="/">首页</a></li>
+  </ul>
+</nav>
+```
+
+**键盘导航**
+- 确保所有交互元素都可通过键盘访问
+- 提供清晰的焦点样式
+
+```typescript
+// ✅ 正确
+<input
+  type="text"
+  className="focus:ring-2 focus:ring-sky-500"
+  onKeyDown={(e) => {
+    if (e.key === 'Enter') handleSubmit()
+  }}
+/>
+```
+
+#### 代码格式化
+
+**使用 Prettier 和 ESLint**
+- 项目已配置 Prettier 和 ESLint
+- 提交代码前自动格式化
+
+**配置规则**
+- 2 个空格缩进
+- 单引号
+- 结尾分号
+- 尾随逗号
+
+```bash
+# 代码检查
+npm run lint
+
+# 代码检查并修复
+npm run lint:fix
+```
+
+---
+
 ### 组件规范
 
 #### 1. 工具组件结构
