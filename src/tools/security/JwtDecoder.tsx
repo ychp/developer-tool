@@ -7,7 +7,7 @@ import { Lock, Copy, Check, AlertCircle } from 'lucide-react'
 interface JwtHeader {
   alg?: string
   typ?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface JwtPayload {
@@ -18,7 +18,7 @@ interface JwtPayload {
   nbf?: number
   iat?: number
   jti?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export function JwtDecoder() {
@@ -80,7 +80,7 @@ export function JwtDecoder() {
     return Date.now() / 1000 > exp
   }
 
-  const copyToClipboard = async (value: any, key: string) => {
+  const copyToClipboard = async (value: unknown, key: string) => {
     await navigator.clipboard.writeText(JSON.stringify(value, null, 2))
     setCopied(key)
     setTimeout(() => setCopied(null), 2000)

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { Hash } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,37 +14,18 @@ type HashType = 'md5' | 'sha1' | 'sha256' | 'sha512'
 export function HashGenerator() {
   const [input, setInput] = useState('')
   const [hashType, setHashType] = useState<HashType>('md5')
-  const [output, setOutput] = useState('')
 
-  const allHashes = input ? {
+  const allHashes = useMemo(() => input ? {
     md5: MD5(input).toString(),
     sha1: SHA1(input).toString(),
     sha256: SHA256(input).toString(),
     sha512: SHA512(input).toString(),
-  } : null
+  } : null, [input])
 
-  useEffect(() => {
-    if (input && hashType) {
-      let hash = ''
-      switch (hashType) {
-        case 'md5':
-          hash = MD5(input).toString()
-          break
-        case 'sha1':
-          hash = SHA1(input).toString()
-          break
-        case 'sha256':
-          hash = SHA256(input).toString()
-          break
-        case 'sha512':
-          hash = SHA512(input).toString()
-          break
-      }
-      setOutput(hash)
-    } else {
-      setOutput('')
-    }
-  }, [input, hashType])
+  const output = useMemo(() => {
+    if (!allHashes) return ''
+    return allHashes[hashType]
+  }, [allHashes, hashType])
 
   return (
     <div className="space-y-6">

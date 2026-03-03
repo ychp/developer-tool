@@ -231,6 +231,7 @@ export function Layout() {
     }
 
     previousPathRef.current = currentPath
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, isGroupActive])
 
   const closePopup = () => {
@@ -305,6 +306,7 @@ export function Layout() {
 
   useEffect(() => {
     setSelectedSearchIndex(-1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery])
 
   const toggleGroup = (groupName: string) => {

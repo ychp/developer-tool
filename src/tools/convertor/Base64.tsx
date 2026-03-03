@@ -23,7 +23,7 @@ export function Base64() {
       try {
         const decoded = decodeURIComponent(escape(atob(input)))
         setOutput(decoded)
-      } catch (err) {
+      } catch {
         setOutput('解码失败：无效的 Base64 字符串')
       }
     }

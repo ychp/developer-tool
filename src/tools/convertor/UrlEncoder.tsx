@@ -17,7 +17,7 @@ export function UrlEncoder() {
     } else {
       try {
         setOutput(decodeURIComponent(input))
-      } catch (err) {
+      } catch {
         setOutput('解码失败：无效的 URL 编码')
       }
     }

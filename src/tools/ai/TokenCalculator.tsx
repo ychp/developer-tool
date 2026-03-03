@@ -101,33 +101,40 @@ const replaceVariables = (text: string, variables: Record<string, string>): stri
 
 const STORAGE_KEY = 'token-calculator-cache'
 
+const loadCachedData = () => {
+  try {
+    const cached = localStorage.getItem(STORAGE_KEY)
+    if (cached) {
+      const data = JSON.parse(cached)
+      if (data.enableCache) {
+        return {
+          input: data.input || '',
+          variableValues: data.variableValues || {},
+          enableCache: true
+        }
+      }
+    }
+  } catch {
+    // 忽略解析错误
+  }
+  return {
+    input: '',
+    variableValues: {},
+    enableCache: false
+  }
+}
+
 export function TokenCalculator() {
-  const [input, setInput] = useState('')
+  const cachedData = loadCachedData()
+  const [input, setInput] = useState(cachedData.input)
   const [selectedModelId, setSelectedModelId] = useState<string>('gpt-4o')
   const [selectedProvider, setSelectedProvider] = useState<string>('全部')
   const [showAllModels, setShowAllModels] = useState(false)
-  const [variableValues, setVariableValues] = useState<Record<string, string>>({})
+  const [variableValues, setVariableValues] = useState<Record<string, string>>(cachedData.variableValues)
   const [showVisualization, setShowVisualization] = useState(true)
-  const [enableCache, setEnableCache] = useState(false)
+  const [enableCache, setEnableCache] = useState(cachedData.enableCache)
 
   const selectedModel = MODELS.find(m => m.id === selectedModelId) || MODELS[0]
-
-  // 从 localStorage 加载缓存
-  useEffect(() => {
-    try {
-      const cached = localStorage.getItem(STORAGE_KEY)
-      if (cached) {
-        const data = JSON.parse(cached)
-        if (data.enableCache) {
-          setInput(data.input || '')
-          setVariableValues(data.variableValues || {})
-          setEnableCache(true)
-        }
-      }
-    } catch {
-      // 忽略解析错误
-    }
-  }, [])
 
   // 保存到 localStorage
   useEffect(() => {

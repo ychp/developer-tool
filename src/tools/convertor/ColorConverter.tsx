@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { HexColorPicker } from 'react-colorful'
 import { Palette, Copy, Check, Trash2, Shuffle, History, Plus, Minus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -7,6 +7,18 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 const STORAGE_KEY = 'color-history'
+
+const loadColorHistory = (): string[] => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (stored) {
+      return JSON.parse(stored)
+    }
+  } catch {
+    // Ignore storage errors
+  }
+  return []
+}
 
 const PRESET_COLORS = {
   '基础色': [
@@ -97,18 +109,7 @@ export function ColorConverter() {
   const [rgb, setRgb] = useState({ r: 59, g: 130, b: 246 })
   const [hsl, setHsl] = useState({ h: 217, s: 91, l: 60 })
   const [copied, setCopied] = useState<string | null>(null)
-  const [colorHistory, setColorHistory] = useState<string[]>([])
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        setColorHistory(JSON.parse(stored))
-      }
-    } catch {
-      // Ignore storage errors
-    }
-  }, [])
+  const [colorHistory, setColorHistory] = useState<string[]>(() => loadColorHistory())
 
   const addToHistory = (color: string) => {
     const newHistory = [color, ...colorHistory.filter(c => c !== color)].slice(0, 10)

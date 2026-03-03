@@ -77,7 +77,7 @@ export function FewshotFormatter() {
       return JSON.stringify({
         task: task || undefined,
         instruction: instruction || undefined,
-        examples: validExamples.map(({ id, description, ...rest }) => ({
+        examples: validExamples.map(({ description, ...rest }) => ({
           ...rest,
           ...(description && { description })
         }))

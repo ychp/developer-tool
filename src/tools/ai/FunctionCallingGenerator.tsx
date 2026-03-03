@@ -149,7 +149,7 @@ export function FunctionCallingGenerator() {
       setJsonError('')
       setJsonInput('')
       setShowJsonModal(false)
-    } catch (e) {
+    } catch {
       setJsonError('JSON 格式错误，请检查输入')
     }
   }

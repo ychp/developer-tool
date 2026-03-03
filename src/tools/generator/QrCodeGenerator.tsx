@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,11 +13,7 @@ export function QrCodeGenerator() {
   const [level, setLevel] = useState<'L' | 'M' | 'Q' | 'H'>('M')
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  useEffect(() => {
-    generateQR()
-  }, [text, size, fgColor, bgColor, level])
-
-  const generateQR = async () => {
+  const generateQR = useCallback(async () => {
     try {
       const canvas = canvasRef.current
       if (!canvas) return
@@ -34,7 +30,11 @@ export function QrCodeGenerator() {
     } catch (error) {
       console.error('Error generating QR code:', error)
     }
-  }
+  }, [text, size, fgColor, bgColor, level])
+
+  useEffect(() => {
+    generateQR()
+  }, [text, size, fgColor, bgColor, level])
 
   const downloadQrCode = () => {
     const canvas = canvasRef.current

@@ -7,9 +7,24 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
+const getInitialShowPrompt = (): boolean => {
+  try {
+    const dismissed = localStorage.getItem('pwa-install-dismissed')
+    if (dismissed) {
+      const daysSinceDismissed = (Date.now() - parseInt(dismissed)) / (1000 * 60 * 60 * 24)
+      if (daysSinceDismissed < 7) {
+        return false
+      }
+    }
+  } catch {
+    // Ignore storage errors
+  }
+  return true
+}
+
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [showPrompt, setShowPrompt] = useState(false)
+  const [showPrompt, setShowPrompt] = useState(getInitialShowPrompt)
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -42,16 +57,6 @@ export function PWAInstallPrompt() {
     setShowPrompt(false)
     localStorage.setItem('pwa-install-dismissed', Date.now().toString())
   }
-
-  useEffect(() => {
-    const dismissed = localStorage.getItem('pwa-install-dismissed')
-    if (dismissed) {
-      const daysSinceDismissed = (Date.now() - parseInt(dismissed)) / (1000 * 60 * 60 * 24)
-      if (daysSinceDismissed < 7) {
-        setShowPrompt(false)
-      }
-    }
-  }, [])
 
   if (!showPrompt || !deferredPrompt) {
     return null

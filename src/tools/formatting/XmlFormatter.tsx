@@ -115,13 +115,13 @@ export function XmlFormatter() {
           const trimmed = line.trim()
           if (!trimmed) continue
           
-          if (trimmed.match(/^\<\/\w/)) {
+          if (trimmed.match(/^<\/\w/)) {
             indentLevel = Math.max(0, indentLevel - 1)
           }
           
           result.push(spaces.repeat(indentLevel) + trimmed)
           
-          if (trimmed.match(/^\<\w[^>]*[^\/]\>.*$/) && !trimmed.match(/\<\/\w/)) {
+          if (trimmed.match(/^<\w[^>]*[^/]>.*$/) && !trimmed.match(/<\/\w/)) {
             indentLevel++
           }
         }
