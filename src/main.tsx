@@ -46,6 +46,7 @@ const FewshotFormatter = lazy(() => import('./tools/ai/FewshotFormatter').then(m
 const ImageSizeCalculator = lazy(() => import('./tools/ai/ImageSizeCalculator').then(m => ({ default: m.ImageSizeCalculator })))
 const MortgageCalculator = lazy(() => import('./tools/lifestyle/MortgageCalculator').then(m => ({ default: m.MortgageCalculator })))
 const TextExtractor = lazy(() => import('./tools/text/TextExtractor').then(m => ({ default: m.TextExtractor })))
+const Calculator = lazy(() => import('./tools/calculator/Calculator').then(m => ({ default: m.Calculator })))
 
 const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<React.ComponentType> }> = [
   { path: 'json-formatter', Component: JsonFormatter },
@@ -84,6 +85,7 @@ const lazyRoutes: Array<{ path: string; Component: React.LazyExoticComponent<Rea
   { path: 'image-size-calculator', Component: ImageSizeCalculator },
   { path: 'mortgage-calculator', Component: MortgageCalculator },
   { path: 'text-extractor', Component: TextExtractor },
+  { path: 'calculator', Component: Calculator },
 ]
 
 const router = createBrowserRouter([

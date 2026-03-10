@@ -80,6 +80,7 @@ const menuGroups = [
       { path: '/timestamp', name: '时间戳转换', icon: Clock },
       { path: '/color-converter', name: '颜色转换', icon: Palette },
       { path: '/number-converter', name: '进制转换', icon: Calculator },
+      { path: '/calculator', name: '科学计算器', icon: Calculator, description: '支持基础运算和科学函数' },
     ]
   },
   {
