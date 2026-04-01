@@ -36,7 +36,8 @@ import {
   DollarSign,
   FileText,
   Layers,
-  Building
+  Building,
+  Type
 } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { ThemeToggle } from '../components/ThemeToggle'
@@ -71,6 +72,7 @@ const menuGroups = [
       { path: '/diff-checker', name: '文本对比', icon: FileDiff },
       { path: '/string-join-split', name: '字符串合并拆分', icon: WrapText },
       { path: '/text-extractor', name: '文本提取器', icon: FileSearch },
+      { path: '/text-length-calculator', name: '文本长度计算器', icon: Type, description: '字符统计与数据库存储建议' },
     ]
   },
   {
