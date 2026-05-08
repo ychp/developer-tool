@@ -30,9 +30,7 @@ import {
   FileText,
   Layers,
   Building,
-  Type,
-  Scissors,
-  GitCompare
+  Type
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -304,20 +302,6 @@ const tools = [
     icon: Calculator,
     category: 'AI 工具',
     gradient: 'from-indigo-500 to-purple-600'
-  },
-  {
-    path: '/rag-text-chunker',
-    name: 'RAG 文本分块',
-    icon: Scissors,
-    category: 'AI 工具',
-    gradient: 'from-rose-500 to-pink-600'
-  },
-  {
-    path: '/vector-similarity',
-    name: '向量相似度',
-    icon: GitCompare,
-    category: 'AI 工具',
-    gradient: 'from-amber-500 to-orange-600'
   },
 ]
 
