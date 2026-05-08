@@ -29,7 +29,10 @@ import {
   DollarSign,
   FileText,
   Layers,
-  Building
+  Building,
+  Type,
+  Scissors,
+  GitCompare
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -107,6 +110,20 @@ const tools = [
     gradient: 'from-sky-500 to-indigo-500'
   },
   {
+    path: '/text-extractor',
+    name: '文本提取器',
+    icon: FileSearch,
+    category: '文本处理',
+    gradient: 'from-cyan-500 to-blue-600'
+  },
+  {
+    path: '/text-length-calculator',
+    name: '文本长度计算器',
+    icon: Type,
+    category: '文本处理',
+    gradient: 'from-indigo-500 to-purple-600'
+  },
+  {
     path: '/timestamp',
     name: '时间戳转换',
     icon: Clock,
@@ -126,6 +143,13 @@ const tools = [
     icon: Calculator,
     category: '转换工具',
     gradient: 'from-blue-400 to-blue-500'
+  },
+  {
+    path: '/calculator',
+    name: '科学计算器',
+    icon: Calculator,
+    category: '转换工具',
+    gradient: 'from-teal-500 to-cyan-600'
   },
   {
     path: '/uuid',
@@ -280,6 +304,20 @@ const tools = [
     icon: Calculator,
     category: 'AI 工具',
     gradient: 'from-indigo-500 to-purple-600'
+  },
+  {
+    path: '/rag-text-chunker',
+    name: 'RAG 文本分块',
+    icon: Scissors,
+    category: 'AI 工具',
+    gradient: 'from-rose-500 to-pink-600'
+  },
+  {
+    path: '/vector-similarity',
+    name: '向量相似度',
+    icon: GitCompare,
+    category: 'AI 工具',
+    gradient: 'from-amber-500 to-orange-600'
   },
 ]
 
