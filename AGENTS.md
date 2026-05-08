@@ -7,10 +7,10 @@
 **项目名称**: 在线工具箱 (Developer Tools)
 
 **技术栈**:
-- React 19 + TypeScript + Vite
-- React Router v6
+- React 19 + TypeScript + Vite（Rolldown）
+- React Router v7
 - Tailwind CSS + Radix UI
-- 36+ 懒加载工具组件
+- 39 个懒加载工具组件
 
 **核心特性**:
 - 路由懒加载（首屏仅 425KB）
@@ -25,20 +25,23 @@
 src/
 ├── components/ui/        # UI 基础组件
 ├── components/tool/      # 工具相关可复用组件
+├── components/shared/    # 共享组件（CalendarCard, JsonTree）
 ├── contexts/            # React Context
 ├── hooks/              # 自定义 Hooks
 ├── layouts/            # 布局组件
 ├── pages/              # 页面组件
-├── tools/              # 工具组件 (36个)
-│   ├── ai/             # AI 工具 (9个)
+├── tools/              # 工具组件 (39个)
+│   ├── ai/             # AI 工具 (11个)
 │   ├── browser/        # 浏览器扩展 (1个)
+│   ├── calculator/     # 计算器 (1个)
 │   ├── convertor/      # 编码转换 (6个)
 │   ├── formatting/     # 格式化工具 (3个)
 │   ├── generator/      # 生成器 (4个)
 │   ├── lifestyle/      # 生活查询 (4个)
 │   ├── media/          # 媒体工具 (2个)
 │   ├── security/       # 加密工具 (2个)
-│   └── text/           # 文本处理 (4个)
+│   ├── text/           # 文本处理 (5个)
+│   └── utils/          # 数据工具 (1个)
 ├── lib/                # 工具函数
 └── main.tsx           # 入口文件
 ```
@@ -50,47 +53,51 @@ src/
 - XML 格式化 (`/xml-formatter`)
 - 代码格式化 (`/code-formatter`)
 
-### 2. 编码转换 (4个)
+### 2. 编码转换 (6个)
 - Base64 编解码 (`/base64`)
 - URL 编解码 (`/url-encoder`)
 - JSON/YAML 转换 (`/json-yaml-converter`)
-- 图片 Base64 (`/image-base64`)
+- 颜色转换 (`/color-converter`)
+- 进制转换 (`/number-converter`)
+- 时间戳转换 (`/timestamp`)
 
-### 3. 文本处理 (4个)
+### 3. 文本处理 (5个)
 - 正则测试 (`/regex-tester`)
 - 文本对比 (`/diff-checker`)
 - 字符串合并拆分 (`/string-join-split`)
 - 文本提取器 (`/text-extractor`)
+- 文本长度计算 (`/text-length-calculator`)
 
-### 4. 转换工具 (3个)
-- 时间戳转换 (`/timestamp`)
-- 颜色转换 (`/color-converter`)
-- 进制转换 (`/number-converter`)
-
-### 5. 生成器 (4个)
+### 4. 生成器 (4个)
 - UUID 生成 (`/uuid`)
 - 密码生成 (`/password-generator`)
 - 二维码生成 (`/qr-generator`)
 - Cron 生成 (`/cron-generator`)
 
+### 5. 计算器 (1个)
+- 通用计算器 (`/calculator`)
+
 ### 6. 媒体工具 (2个)
 - 图片链接预览 (`/image-link-preview`)
+- 图片 Base64 (`/image-base64`)
+
+### 7. 数据工具 (1个)
 - 表格预览 (`/table-viewer`)
 
-### 7. 加密工具 (2个)
+### 8. 加密工具 (2个)
 - 哈希生成 (`/hash-generator`)
 - JWT 解码 (`/jwt-decoder`)
 
-### 8. 浏览器扩展 (1个)
+### 9. 浏览器扩展 (1个)
 - Chrome 扩展 (`/chrome-extensions`)
 
-### 9. 生活查询 (4个)
+### 10. 生活查询 (4个)
 - 手机号归属 (`/phone-number`)
 - 邮编查询 (`/postal-code`)
 - 电话区号 (`/area-code`)
 - 房贷计算器 (`/mortgage-calculator`)
 
-### 10. AI 工具 (9个)
+### 11. AI 工具 (11个)
 - Token 计算器 (`/token-calculator`)
 - AI 价格计算器 (`/ai-price-calculator`)
 - Function Calling 生成器 (`/function-calling-generator`)
@@ -100,6 +107,8 @@ src/
 - Markdown → Prompt (`/markdown-to-prompt`)
 - Few-shot 格式化 (`/fewshot-formatter`)
 - 图像尺寸计算器 (`/image-size-calculator`)
+- RAG 文本分块器 (`/rag-text-chunker`)
+- 向量相似度计算 (`/vector-similarity`)
 
 ## 开发规范
 
@@ -1148,4 +1157,4 @@ npm run lint:fix
 
 ---
 
-最后更新：2025-02-25
+最后更新：2026-05-08

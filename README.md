@@ -2,15 +2,15 @@
 
 > 项目源码：[https://github.com/ychp/developer-tool](https://github.com/ychp/developer-tool)
 
-一个现代化的在线工具箱，提供 26+ 种实用工具，满足您的工作与生活需求。
+一个现代化的在线工具箱，提供 39 种实用工具，覆盖 12 大分类，满足开发者、AI 从业者与日常生活的各类需求。
 
 ## ✨ 特性
 
-- 🚀 基于 React 19 + TypeScript + Vite 构建
+- 🚀 基于 React 19 + TypeScript + Vite（Rolldown）构建
 - 📱 响应式设计，完美支持移动端和桌面端
 - 🎨 使用 Tailwind CSS 打造精美 UI
 - 🛡️ 完全类型安全的 TypeScript 实现
-- 📦 26+ 实用工具，10 大分类
+- 📦 39 种实用工具，12 大分类
 - 🔒 所有数据在本地处理，保护隐私
 - ⚡ 路由懒加载，首屏加载仅 425KB（减少 94%）
 - 🌙 深色模式支持
@@ -21,59 +21,74 @@
 
 ## 🛠️ 工具分类
 
-### 格式化
+### 格式化（3 个）
 - **JSON 格式化** - 美化、压缩和验证 JSON 数据，支持树状结构展示
 - **XML 格式化** - 美化和压缩 XML 文档
-- **代码格式化** - 支持 10+ 种编程语言的代码格式化
+- **代码格式化** - 支持 10+ 种编程语言的代码格式化（含 SQL）
 
-### 编码转换
+### 编码转换（6 个）
 - **Base64 编解码** - Base64 编码和解码工具，支持文本转换
 - **URL 编解码** - URL 编码和解码工具
 - **JSON/YAML 转换** - JSON 和 YAML 格式互相转换
-- **图片 Base64** - 将图片转换为 Base64 编码
+- **颜色转换** - RGB、HSL、HEX 等颜色格式转换，实时预览
+- **进制转换** - 二进制、八进制、十进制、十六进制互转
+- **时间戳转换** - Unix 时间戳与日期时间互转
 
-### 文本处理
+### 文本处理（5 个）
 - **正则测试** - 实时测试正则表达式，支持多种匹配模式
 - **文本对比** - 对比两个文本的差异，高亮显示不同部分
 - **字符串合并拆分** - 支持多种分隔符的字符串合并和拆分
+- **文本提取器** - 从文本中提取特定内容，支持去重、排序
+- **文本长度计算** - 统计文本的字符数、词数、行数、字节数等
 
-### 转换工具
-- **时间戳转换** - Unix 时间戳与日期时间互转
-- **颜色转换** - RGB、HSL、HEX 等颜色格式转换，实时预览
-- **进制转换** - 二进制、八进制、十进制、十六进制互转
-
-### 生成器
+### 生成器（4 个）
 - **UUID 生成** - 生成标准的 UUID v4
 - **密码生成** - 生成安全的随机密码，可自定义规则
 - **二维码生成** - 将文本转换为二维码图片，支持自定义样式
 - **Cron 表达式** - Cron 表达式生成和解析工具
 
-### 媒体工具
+### 计算器（1 个）
+- **通用计算器** - 在线科学计算器
+
+### 媒体工具（2 个）
 - **图片链接预览** - 批量预览图片链接，支持多行输入
+- **图片 Base64** - 将图片转换为 Base64 编码
+
+### 数据工具（1 个）
 - **表格预览** - 在线预览 CSV、Excel、JSON 表格数据
 
-### 加密工具
+### 加密工具（2 个）
 - **哈希生成** - 生成 MD5、SHA-1、SHA-256 等哈希值
 - **JWT 解码** - 解码和查看 JWT Token 内容
 
-### 浏览器扩展
+### 浏览器扩展（1 个）
 - **Chrome 扩展** - 实用 Chrome 浏览器扩展工具集
 
-### 生活查询
+### 生活查询（4 个）
 - **电话号码查询** - 查询手机号码归属地信息
 - **邮政编码查询** - 查询全国各地邮政编码
 - **区号查询** - 查询全国各地电话区号
+- **房贷计算器** - 商业贷款/公积金/组合贷款月供计算
 
-### AI 工具
+### AI 工具（10 个）
 - **Token 计算器** - 计算文本的 Token 数量（支持多种模型）
+- **AI 价格计算器** - 计算不同 AI 模型的 API 调用成本
+- **Function Calling 生成器** - 可视化生成 OpenAI Function Calling JSON Schema
+- **JSON → Prompt** - 将 JSON 数据转为结构化 Prompt
+- **图像 Prompt 生成器** - Midjourney/DALL-E/Stable Diffusion 提示词生成
+- **System Prompt 生成器** - 生成系统提示词，含角色设定与约束条件
+- **Markdown → Prompt** - Markdown 转 Prompt 格式
+- **Few-shot 格式化** - 格式化 Few-shot 学习示例
+- **图像尺寸计算器** - 计算图像的 Token 消耗（GPT-4V/Claude 3）
+- **向量相似度计算** - 计算向量间的余弦相似度、欧氏距离、点积
 
 ## 🎯 技术栈
 
 ### 核心框架
 - **React 19** - UI 框架
 - **TypeScript** - 类型安全
-- **Vite** - 构建工具（使用 Rolldown）
-- **React Router** - 路由管理
+- **Vite（Rolldown）** - 构建工具
+- **React Router v7** - 路由管理
 
 ### UI 框架
 - **Tailwind CSS** - CSS 框架
@@ -85,13 +100,14 @@
 - **crypto-js** - 加密库
 - **diff** - 文本对比
 - **qrcode / react-qr-code** - 二维码生成
-- **lunar-typescript** - 农历日期
 - **axios** - HTTP 请求
 - **xlsx** - Excel 文件处理
 - **js-yaml** - YAML 解析
 - **js-tiktoken** - Token 计算
 - **prettier** - 代码格式化
+- **sql-formatter** - SQL 格式化
 - **react-colorful** - 颜色选择器
+- **lunar-typescript** - 农历日期
 - **vite-plugin-pwa** - PWA 支持
 
 ### 开发工具
@@ -102,12 +118,14 @@
 ## 🌟 功能亮点
 
 ### 性能优化
-- **路由懒加载** - 26 个工具组件按需加载
+- **路由懒加载** - 39 个工具组件按需加载
 - **代码分割** - 精细化分割大型第三方库
-  - vendor-react (370 KB) - React 核心
-  - vendor-xlsx (331 KB) - Excel 处理
-  - vendor-tiktoken (5.6 MB) - Token 计算（按需加载）
-  - vendor-lunar (299 KB) - 农历库（按需加载）
+  - vendor-react - React 核心
+  - vendor-xlsx - Excel 处理
+  - vendor-tiktoken - Token 计算（按需加载）
+  - vendor-lunar - 农历库（按需加载）
+  - vendor-prettier - 代码格式化（按需加载）
+  - vendor-sql-formatter - SQL 格式化（按需加载）
 - **初始加载优化** - 从 7MB+ 减少到 425KB
 
 ### 键盘快捷键
@@ -186,41 +204,63 @@ npm run lint
 - **Cloudflare Pages** - 全球加速，免费 SSL
 - **GitHub Pages** - 免费 GitHub 托管
 
-详细部署指南请参考：[部署指南](#部署指南)
-
 ## 📁 项目结构
 
 ```
 developer-tools/
 ├── src/
 │   ├── assets/              # 静态资源
+│   │   └── images/          # 图片资源
 │   ├── components/          # 公共组件
 │   │   ├── ui/              # UI 基础组件
 │   │   │   ├── button.tsx
 │   │   │   ├── card.tsx
 │   │   │   ├── skeleton.tsx
 │   │   │   ├── ErrorBoundary.tsx
+│   │   │   ├── PWAInstallPrompt.tsx
 │   │   │   └── ...
-│   │   └── shared/          # 共享组件
+│   │   ├── shared/          # 共享组件
+│   │   │   ├── CalendarCard.tsx
+│   │   │   └── JsonTree.tsx
+│   │   ├── tool/            # 工具相关可复用组件
+│   │   │   ├── CopyButton.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── EncodeDecodeLayout.tsx
+│   │   │   ├── ModeSwitch.tsx
+│   │   │   └── ToolPageHeader.tsx
+│   │   └── ThemeToggle.tsx
 │   ├── contexts/            # React Context
-│   │   └── ThemeContext.tsx # 主题上下文
+│   │   └── ThemeContext.tsx  # 主题上下文
 │   ├── hooks/               # 自定义 Hooks
-│   │   └── useUndoRedo.ts   # 撤销重做
+│   │   ├── useClipboard.ts
+│   │   ├── useErrorHandler.ts
+│   │   ├── useKeyboardShortcuts.ts
+│   │   └── useUndoRedo.ts
 │   ├── layouts/             # 布局组件
 │   │   └── Layout.tsx       # 主布局（含侧边栏）
 │   ├── lib/                 # 工具函数
 │   │   └── utils.ts
 │   ├── pages/               # 页面组件
-│   │   └── Home.tsx         # 首页
-│   ├── tools/               # 工具组件 (26个)
-│   │   ├── JsonFormatter.tsx
-│   │   ├── Base64.tsx
-│   │   └── ...
+│   │   ├── Home.tsx         # 首页
+│   │   └── NotFound.tsx     # 404 页面
+│   ├── tools/               # 工具组件 (39个)
+│   │   ├── ai/              # AI 工具 (11个)
+│   │   ├── browser/         # 浏览器扩展 (1个)
+│   │   ├── calculator/      # 计算器 (1个)
+│   │   ├── convertor/       # 编码转换 (6个)
+│   │   ├── formatting/      # 格式化工具 (3个)
+│   │   ├── generator/       # 生成器 (4个)
+│   │   ├── lifestyle/       # 生活查询 (4个)
+│   │   ├── media/           # 媒体工具 (2个)
+│   │   ├── security/        # 加密工具 (2个)
+│   │   ├── text/            # 文本处理 (5个)
+│   │   └── utils/           # 数据工具 (1个)
 │   ├── App.tsx
-│   ├── main.tsx
-│   └── index.css
+│   ├── main.tsx             # 入口文件（路由配置）
+│   ├── pwa.ts               # PWA 注册
+│   └── index.css            # 全局样式
 ├── public/                  # 公共静态资源
-├── .trae/                   # Trae AI 配置
+├── scripts/                 # 脚本工具
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
@@ -233,9 +273,9 @@ developer-tools/
 
 ### 添加新工具
 
-1. 在 `src/tools/` 创建新的工具组件
+1. 在 `src/tools/` 对应分类目录下创建新的工具组件
 2. 在 `src/layouts/Layout.tsx` 的 `menuGroups` 添加工具信息
-3. 在 `src/main.tsx` 添加懒加载配置
+3. 在 `src/main.tsx` 添加懒加载配置和路由
 
 ### 组件规范
 
@@ -254,14 +294,22 @@ developer-tools/
 
 ## 📝 更新日志
 
-### v1.0.0 (最新)
+### v1.1.0 (最新)
+- ✅ 新增计算器工具
+- ✅ 新增文本长度计算器
+- ✅ 新增向量相似度计算工具
+- ✅ 升级 React Router 至 v7
+- ✅ 新增 sql-formatter 依赖
+- ✅ 工具总数从 26 增至 39
+
+### v1.0.0
 - ✅ 新增 26 种实用工具
 - ✅ 实现路由懒加载和代码分割
 - ✅ 添加键盘快捷键支持
 - ✅ 实现骨架屏加载和错误边界
 - ✅ 支持深色模式
 - ✅ 性能优化：初始加载减少 94%
-- ✅ **PWA 支持**：离线访问、桌面安装、自动更新
+- ✅ PWA 支持：离线访问、桌面安装、自动更新
 
 ## 🤝 贡献
 
@@ -271,7 +319,7 @@ developer-tools/
 
 1. Fork 本仓库
 2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交您的修改 (`git commit -m 'Add some AmazingFeature'`)
+3. 提交您的修改 (`git commit -m 'feat: Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 开启一个 Pull Request
 
@@ -285,7 +333,6 @@ developer-tools/
 - [Tailwind CSS](https://tailwindcss.com/) - 优秀的 CSS 框架
 - [Radix UI](https://www.radix-ui.com/) - 无障碍的 UI 组件库
 - [Vite](https://vitejs.dev/) - 快速的构建工具
-- [Unsplash](https://unsplash.com/) - 高质量图片
 
 ---
 
